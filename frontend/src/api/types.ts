@@ -106,6 +106,7 @@ export interface SkillGapRequest {
   job_id: string;
   resume_text: string;
   parsed_jd: ParsedJobDescription;
+  resume_profile: ResumeProfile;
   candidate_name?: string | null;
   candidate_email?: string | null;
 }
@@ -342,6 +343,11 @@ export interface EvaluationMessage {
   turn_number: number;
   evaluation: AnswerEvaluation | null;
 }
+export interface EvaluationFailedMessage {
+  type: "evaluation_failed";
+  turn_number: number;
+  message: string;
+}
 
 export interface CompletedMessage {
   type: "completed";
@@ -359,5 +365,6 @@ export type ServerMessage =
   | QuestionMessage
   | TranscriptMessage
   | EvaluationMessage
+  | EvaluationFailedMessage
   | CompletedMessage
   | ErrorMessage;

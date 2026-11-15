@@ -30,7 +30,7 @@ from app.utils.llm_client import (
     generate_structured as default_generate_structured,
 )
 
-MIN_ANSWER_WORDS = 8
+
 VALID_ROUTING_HINTS = {"next_question", "follow_up", "drill_deeper", "skip_to_harder"}
 
 
@@ -88,12 +88,6 @@ async def evaluate_answer(
     if not turn.answer_text or not turn.answer_text.strip():
         raise EvaluationError(
             f"Turn {turn.turn_number} has no answer_text to evaluate.",
-            reason="answer_too_short",
-        )
-    if len(turn.answer_text.split()) < MIN_ANSWER_WORDS:
-        raise EvaluationError(
-            f"Turn {turn.turn_number} answer is too short ({len(turn.answer_text.split())} "
-            f"words) to evaluate meaningfully.",
             reason="answer_too_short",
         )
 

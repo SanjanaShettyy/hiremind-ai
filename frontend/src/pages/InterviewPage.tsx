@@ -41,6 +41,7 @@ export default function InterviewPage() {
     messages,
     connectionStatus,
     isInterviewComplete,
+    isEvaluationFailed,
     turnNumber,
     totalQuestions,
     isWaitingForQuestion,
@@ -54,11 +55,8 @@ export default function InterviewPage() {
       speak(question.question_text);
     },
     onComplete: () => {
-      stopSpeech();
-      setTimeout(() => {
-        navigate(`/session/${sessionId}/report`);
-      }, 1500);
-    },
+    stopSpeech();
+  },
   });
 
   useEffect(() => {
@@ -73,7 +71,7 @@ export default function InterviewPage() {
 
   function handleSend(e?: FormEvent) {
     if (e) e.preventDefault();
-    if (!inputAnswer.trim() || isWaitingForQuestion) return;
+    if (!inputAnswer.trim() || isWaitingForQuestion || isEvaluationFailed) return;
     stopSpeech();
     sendAnswer(inputAnswer);
     setInputAnswer("");
@@ -160,7 +158,7 @@ export default function InterviewPage() {
               <span className="text-[11px] font-medium capitalize text-slate-400">
                 {connectionStatus}
               </span>
-              {connectionStatus === "disconnected" && (
+              {connectionStatus === "disconnected" && !isEvaluationFailed &&(
                 <button
                   type="button"
                   onClick={reconnect}
@@ -192,13 +190,19 @@ export default function InterviewPage() {
         </div>
       </header>
 
-      {/* ---------------- Error Notification Banner ---------------- */}
       {error && (
         <div
           role="alert"
-          className="border-b border-rose-500/30 bg-rose-950/40 px-6 py-2 text-center text-xs font-medium text-rose-300 backdrop-blur-md"
+          className={`border-b px-6 py-3 text-center text-sm backdrop-blur-md ${
+            isEvaluationFailed
+              ? "border-amber-500/40 bg-amber-950/40 text-amber-200"
+              : "border-rose-500/30 bg-rose-950/40 text-rose-300"
+          }`}
         >
-          {error}
+          {isEvaluationFailed && (
+            <p className="mb-1 font-bold">Interview Paused — Technical Issue</p>
+          )}
+          <p>{error}</p>
         </div>
       )}
 
@@ -351,14 +355,14 @@ export default function InterviewPage() {
             Interview Complete!
           </p>
           <p className="text-xs text-slate-300 mt-0.5">
-            Generating your multi-dimensional competency benchmark & personalized study plan...
+            All five answers have been evaluated. Review your evaluations before generating your report.
           </p>
           <button
             type="button"
             onClick={() => navigate(`/session/${sessionId}/report`)}
             className="mt-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-500 transition"
           >
-            View Full Report →
+            Generate Report → →
           </button>
         </div>
       )}
@@ -386,7 +390,11 @@ export default function InterviewPage() {
             <form onSubmit={handleSend} className="flex items-end gap-2.5">
               {/* Mic Button */}
               <MicButton
-                disabled={isWaitingForQuestion || connectionStatus !== "connected"}
+                disabled={
+                isWaitingForQuestion ||
+                connectionStatus !== "connected" ||
+                isEvaluationFailed
+                }
                 onRecordingStart={stopSpeech}
                 onRecordingComplete={async (audioBlob) => {
                   setVoiceError(null);
@@ -403,7 +411,11 @@ export default function InterviewPage() {
                   value={inputAnswer}
                   onChange={(e) => setInputAnswer(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  disabled={isWaitingForQuestion || connectionStatus !== "connected"}
+                  disabled={
+                  isWaitingForQuestion ||
+                  connectionStatus !== "connected" ||
+                  isEvaluationFailed
+                  }
                   placeholder={
                     connectionStatus !== "connected"
                       ? "Connecting to interview session..."
@@ -421,7 +433,8 @@ export default function InterviewPage() {
                 disabled={
                   !inputAnswer.trim() ||
                   isWaitingForQuestion ||
-                  connectionStatus !== "connected"
+                  connectionStatus !== "connected"||
+                  isEvaluationFailed
                 }
                 className="flex h-11 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 font-semibold text-white shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:opacity-40 transition"
               >

@@ -23,7 +23,6 @@ from app.core.schemas import (
     InterviewTurn,
     SessionStatus,
     SkillGapReport,
-    TurnStatus,
 )
 from app.agents.interview.service import (
     get_interview_session,
@@ -178,46 +177,57 @@ async def _run_interview_loop(
 
         try:
             state = await evaluate_turn(state)
-        except Exception as eval_exc:
-            logger.warning("evaluate_turn failed or timed out: %s. Using fallback evaluation.", eval_exc)
-            # Gracefully provide a fallback evaluation so the candidate is never stuck
-            from app.core.schemas import AnswerEvaluation, DimensionScore, ScoreDimension
-            import uuid
-            from datetime import datetime, timezone
 
-            turn_to_eval = state["session"].turns[-1]
-            fallback_evaluation = AnswerEvaluation(
-                evaluation_id=str(uuid.uuid4()),
-                session_id=str(state["session"].session_id),
-                turn_number=turn_to_eval.turn_number,
-                candidate_id=state["skill_gap_report"].candidate_id,
-                evaluated_at=datetime.now(timezone.utc),
-                dimension_scores=[
-                    DimensionScore(dimension=dim, score=7.0, rationale="Answer recorded successfully.")
-                    for dim in ScoreDimension
-                ],
-                overall_score=7.0,
-                weighted_score=7.0,
-                summary_feedback="Thank you for your answer. The response has been recorded and evaluated.",
-                strengths=["Clear response provided", "Good technical communication"],
-                improvements=["Could provide deeper architectural considerations"],
-                model_answer_snippet=None,
-                routing_hint="next_question",
-                suggested_follow_up=None,
-                skill_level_inferred=None,
-                latency_ms=100,
+        except Exception:
+            logger.exception(
+                "Interview evaluation failed. Pausing session %s.",
+                state["session"].session_id,
             )
-            updated_turn = turn_to_eval.model_copy(
-                update={
-                    "evaluation": fallback_evaluation,
-                    "status": TurnStatus.EVALUATED,
-                }
+
+            # Preserve the submitted answer and pause the interview.
+            paused_session = state["session"].model_copy(
+                update={"status": SessionStatus.PAUSED}
             )
-            state["session"] = state["session"].model_copy(
-                update={
-                    "turns": [*state["session"].turns[:-1], updated_turn],
-                }
+            state["session"] = paused_session
+            failed_turn = paused_session.turns[-1]
+
+            # Persist the answer and paused session when the database is available.
+            if db is not None:
+                try:
+                    await persist_interview_turn(
+                        db,
+                        session=paused_session,
+                        turn=failed_turn,
+                    )
+                except Exception:
+                    logger.exception("Could not persist the failed evaluation turn.")
+
+                try:
+                    await update_interview_session(db, session=paused_session)
+                except Exception:
+                    logger.exception("Could not persist the paused interview session.")
+
+            # Keep the in-memory session in sync.
+            _mem_store.save(
+                session=paused_session,
+                skill_gap_report=state["skill_gap_report"],
+                resume_text=state.get("candidate_resume_text", ""),
+                job_description_text=state.get("job_description_text", ""),
             )
+
+            await websocket.send_json({
+                "type": "evaluation_failed",
+                "turn_number": failed_turn.turn_number,
+                "message": (
+                    "We couldn't evaluate your answer due to a technical issue. "
+                    "Your response has been received, but your interview has been paused. "
+                    "Please contact the interview administrator or technical support "
+                    "for assistance."
+                ),
+            })
+
+            await websocket.close(code=1000)
+            return
 
         # Persist turn only if DB is available
         if db is not None:
@@ -312,7 +322,17 @@ async def interview_websocket(
 
     if mem_entry is not None:
         session, skill_gap_report, candidate_resume_text, job_description_text = mem_entry
-
+        if session.status == SessionStatus.PAUSED:
+            await websocket.send_json({
+                "type": "evaluation_failed",
+                "turn_number": session.current_turn_number,
+                "message": (
+                    "Your interview is paused due to a technical issue. "
+                    "Please contact the interview administrator or technical support."
+                ),
+            })
+            await websocket.close(code=1000)
+            return
         if not session.question_set or not session.question_set.questions:
             await websocket.send_json({"type": "error", "message": "QuestionSet is empty."})
             await websocket.close(code=1008)
@@ -350,7 +370,17 @@ async def interview_websocket(
                 await websocket.send_json({"type": "error", "message": "Interview session not found."})
                 await websocket.close(code=1008)
                 return
-
+            if session.status == SessionStatus.PAUSED:
+                await websocket.send_json({
+                    "type": "evaluation_failed",
+                    "turn_number": session.current_turn_number,
+                    "message": (
+                        "Your interview is paused due to a technical issue. "
+                        "Please contact the interview administrator or technical support."
+                    ),
+                })
+                await websocket.close(code=1000)
+                return
             session = session.model_copy(update={"status": SessionStatus.IN_PROGRESS})
             await update_interview_session(db, session=session)
 
