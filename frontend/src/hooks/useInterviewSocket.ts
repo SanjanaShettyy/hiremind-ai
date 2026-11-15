@@ -38,6 +38,7 @@ export interface UseInterviewSocketReturn {
   messages: ChatMessage[];
   connectionStatus: ConnectionStatus;
   isInterviewComplete: boolean;
+  isEvaluationFailed: boolean;
   currentQuestion: Question | null;
   turnNumber: number;
   totalQuestions: number;
@@ -75,6 +76,7 @@ export function useInterviewSocket(
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("connecting");
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
+  const [isEvaluationFailed, setIsEvaluationFailed] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [turnNumber, setTurnNumber] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(initialTotalQuestions);
@@ -89,6 +91,7 @@ export function useInterviewSocket(
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimeoutRef = useRef<number | null>(null);
   const manuallyClosedRef = useRef(false);
+  const evaluationFailedRef = useRef(false);
 
   const clearReconnectTimeout = useCallback(() => {
     if (reconnectTimeoutRef.current !== null) {
@@ -101,6 +104,10 @@ export function useInterviewSocket(
     if (!sessionId) {
       setConnectionStatus("error");
       setError("No session ID provided.");
+      return;
+    }
+    if (evaluationFailedRef.current) {
+      setConnectionStatus("disconnected");
       return;
     }
 
@@ -217,7 +224,28 @@ export function useInterviewSocket(
               optionsRef.current.onEvaluation?.(evaluation, evalTurn);
               break;
             }
+            case "evaluation_failed": {
+              evaluationFailedRef.current = true;
+              setIsEvaluationFailed(true);
+              setIsWaitingForQuestion(false);
+              setIsRecording(false);
+              setError(data.message);
+              clearReconnectTimeout();
 
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: `evaluation-failed-${Date.now()}`,
+                  sender: "system",
+                  text: data.message,
+                  timestamp: new Date(),
+                  turnNumber: data.turn_number,
+                },
+                ]);
+
+              optionsRef.current.onError?.(data.message);
+              break;
+            }
             case "completed": {
               setIsInterviewComplete(true);
               setIsWaitingForQuestion(false);
@@ -317,14 +345,20 @@ export function useInterviewSocket(
   }, [clearReconnectTimeout]);
 
   const reconnect = useCallback(() => {
-    reconnectAttemptsRef.current = 0;
-    connect();
+  if (evaluationFailedRef.current) return;
+  reconnectAttemptsRef.current = 0;
+  connect();
   }, [connect]);
 
   const sendAnswer = useCallback(
     (text: string) => {
       const trimmed = text.trim();
-      if (!trimmed || isWaitingForQuestion || !socketRef.current) return;
+      if (
+        evaluationFailedRef.current ||
+        !trimmed ||
+        isWaitingForQuestion ||
+        !socketRef.current
+      ) return;
       if (socketRef.current.readyState !== WebSocket.OPEN) {
         setError("Cannot send answer: connection is not open.");
         return;
@@ -340,7 +374,7 @@ export function useInterviewSocket(
           timestamp: new Date(),
           turnNumber,
         },
-      ]);
+        ]);
 
       // Lock input until next question or evaluation returns
       setIsWaitingForQuestion(true);
@@ -359,6 +393,10 @@ export function useInterviewSocket(
   // Send candidate audio blob converted to base64 over WebSocket
   const sendAudioAnswer = useCallback(
     async (audioBlob: Blob): Promise<void> => {
+      if (evaluationFailedRef.current) {
+        throw new Error("Interview is paused due to an evaluation failure.");
+      }
+
       if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
         const msg = "Cannot send audio: connection is not open.";
         setError(msg);
@@ -418,6 +456,7 @@ export function useInterviewSocket(
     connectionStatus,
     isInterviewComplete,
     currentQuestion,
+    isEvaluationFailed,
     turnNumber,
     totalQuestions,
     isWaitingForQuestion,

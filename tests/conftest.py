@@ -127,6 +127,28 @@ _FIXTURES = {
         ],
         "metadata": {},
     },
+        "CompactSkillGapAnalysis": {
+        "assessments": [
+            {
+                "skill_name": "Python",
+                "resume_claimed_level": "proficient",
+                "resume_evidence": "4 years building Python services",
+                "suggested_focus": None,
+            },
+            {
+                "skill_name": "Kubernetes",
+                "resume_claimed_level": "absent",
+                "resume_evidence": None,
+                "suggested_focus": "Build practical experience deploying applications with Kubernetes.",
+            },
+            {
+                "skill_name": "PostgreSQL",
+                "resume_claimed_level": "absent",
+                "resume_evidence": None,
+                "suggested_focus": "Practice PostgreSQL queries and database optimization.",
+            },
+        ],
+    },
 }
 
 
@@ -181,4 +203,4 @@ class FakeAsyncSession:
 
 @pytest.fixture
 def fake_db_session():
-    return FakeAsyncSession()
+    return FakeAsyncSession()

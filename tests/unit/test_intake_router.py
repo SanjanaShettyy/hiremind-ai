@@ -1,3 +1,4 @@
+import asyncio
 """Tests through the actual FastAPI app — catches DI/wiring bugs unit tests can't.
 
 Overrides get_generate_structured and get_db via app.dependency_overrides,
@@ -99,3 +100,18 @@ async def test_routes_return_503_when_llm_not_wired(sample_jd_text, fake_db_sess
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         resp = await c.post("/parse/jd", json={"raw_text": sample_jd_text})
     assert resp.status_code == 503
+
+async def test_parse_jd_route_returns_504_on_llm_timeout(fake_db_session, sample_jd_text):
+    async def timeout_llm(*args, **kwargs):
+        raise asyncio.TimeoutError()
+
+    test_app = FastAPI()
+    test_app.include_router(router)
+    test_app.dependency_overrides[get_generate_structured] = lambda: timeout_llm
+    test_app.dependency_overrides[get_db] = lambda: fake_db_session
+
+    transport = ASGITransport(app=test_app, raise_app_exceptions=False)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        resp = await c.post("/parse/jd", json={"raw_text": sample_jd_text})
+
+    assert resp.status_code == 504

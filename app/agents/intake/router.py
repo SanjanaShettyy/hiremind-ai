@@ -6,8 +6,9 @@ app/utils/llm_client.py exists, the default dependency returns None and routes
 respond 503 (not an unhandled 500) so the "not wired yet" state is explicit.
 """
 
+import asyncio
 from typing import Optional
-
+from .parser import ResumeProfile
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,6 +43,7 @@ class SkillGapRequest(BaseModel):
     job_id: str
     resume_text: str
     parsed_jd: ParsedJobDescription
+    resume_profile: Optional[ResumeProfile] = None
     candidate_name: Optional[str] = None
     candidate_email: Optional[str] = None
 
@@ -50,6 +52,8 @@ from app.utils.llm_client import LLMError, LLMRateLimitError
 
 
 def _handle_llm_errors(exc: Exception):
+    if isinstance(exc, (asyncio.TimeoutError, TimeoutError)):
+        raise HTTPException(status_code=504, detail="LLM request timed out. Please try again.") from exc
     if isinstance(exc, (RuntimeError, LLMRateLimitError)):
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     if isinstance(exc, LLMError):
@@ -76,7 +80,7 @@ async def parse_resume_route(
         content = await file.read()
         resume_text, profile = await parse_resume(filename, content, generate_structured)
         return {"resume_text": resume_text, "profile": profile}
-    except (ValueError, RuntimeError) as exc:
+    except (ValueError, RuntimeError, LLMError, asyncio.TimeoutError) as exc:
         _handle_llm_errors(exc)
 
 
@@ -87,7 +91,7 @@ async def parse_jd_route(
 ):
     try:
         return await parse_jd(request.raw_text, generate_structured)
-    except (ValueError, RuntimeError) as exc:
+    except (ValueError, RuntimeError, LLMError, asyncio.TimeoutError) as exc:
         _handle_llm_errors(exc)
 
 
@@ -104,6 +108,7 @@ async def analyze_skill_gap_route(
         return await analyze_skill_gap(
             candidate_id=request.candidate_id,
             job_id=request.job_id,
+            resume_profile=request.resume_profile,
             resume_text=request.resume_text,
             parsed_jd=request.parsed_jd,
             generate_structured=generate_structured,
@@ -112,5 +117,5 @@ async def analyze_skill_gap_route(
             candidate_name=request.candidate_name,
             candidate_email=request.candidate_email,
         )
-    except (ValueError, RuntimeError) as exc:
+    except (ValueError, RuntimeError, LLMError, asyncio.TimeoutError) as exc:
         _handle_llm_errors(exc)

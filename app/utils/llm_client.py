@@ -69,6 +69,8 @@ async def _raw_completion(
     model: str,
     temperature: float,
     timeout_seconds: int,
+    max_completion_tokens: int = 8192,
+    reasoning_effort: Optional[str] = None,
     response_model: Optional[Type[BaseModel]] = None,
 ) -> str:
     settings = get_settings()
@@ -87,12 +89,14 @@ async def _raw_completion(
             kwargs = {
                 "model": model,
                 "temperature": temperature,
-                "max_completion_tokens": 8192,
+                "max_completion_tokens": max_completion_tokens,
                 "messages": [
                     {"role": "system", "content": system_with_json},
                     {"role": "user", "content": user_prompt},
                 ],
             }
+            if reasoning_effort is not None:
+                kwargs["reasoning_effort"] = reasoning_effort
             # Use json_object mode universally for Groq — json_schema mode is
             # only supported on a subset of models and can cause silent hangs
             # on complex nested schemas. Pydantic validates the output anyway.
@@ -178,6 +182,8 @@ async def generate_structured(
     model: Optional[str] = None,
     temperature: float = 0.2,
     timeout_seconds: int = 30,
+    reasoning_effort: Optional[str] = None,
+    max_completion_tokens: int = 8192,
 ) -> Any:
     """Call the LLM and return validated Pydantic model (if response_model passed) or parsed dict."""
     settings = get_settings()
@@ -192,7 +198,10 @@ async def generate_structured(
         model=resolved_model,
         temperature=temperature,
         timeout_seconds=timeout_seconds,
+        max_completion_tokens=max_completion_tokens,
         response_model=response_model,
+        reasoning_effort=reasoning_effort,
+
     )
 
     data = parse_json_response(_strip_fences(raw))

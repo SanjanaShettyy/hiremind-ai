@@ -106,6 +106,7 @@ export default function UploadPage() {
         job_id: jobId,
         resume_text,
         parsed_jd,
+        resume_profile: profile,
         candidate_name: profile.name ?? undefined,
       });
 

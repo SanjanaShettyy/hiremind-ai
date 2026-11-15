@@ -91,21 +91,32 @@ async def test_mediocre_situational_answer_scores_middling():
 
 
 @pytest.mark.asyncio
-async def test_too_short_answer_raises_evaluation_error_without_calling_llm():
-    def _unreachable(*args, **kwargs):
-        raise AssertionError("LLM should never be called for a too-short answer")
+async def test_short_answer_is_sent_to_llm_for_evaluation():
+    fake = make_fake_generate_structured({})
+    llm_call_count = 0
 
-    with pytest.raises(EvaluationError) as exc_info:
-        await evaluate_answer(
-            session_id="test-session",
-            turn=TURN_TOO_SHORT,
-            skill_gap_report=SKILL_GAP_REPORT,
-            session_history=[],
-            job_description_text=JOB_DESCRIPTION_TEXT,
-            candidate_resume_text=CANDIDATE_RESUME_TEXT,
-            _generate_structured=_unreachable,
-        )
-    assert exc_info.value.reason == "answer_too_short"
+    async def tracking_fake(**kwargs):
+        nonlocal llm_call_count
+        llm_call_count += 1
+        return await fake(**kwargs)
+
+    short_turn = TURN_TOO_SHORT.model_copy(
+        update={"answer_text": "Sorry"}
+    )
+
+    result = await evaluate_answer(
+        session_id="test-session",
+        turn=short_turn,
+        skill_gap_report=SKILL_GAP_REPORT,
+        session_history=[],
+        job_description_text=JOB_DESCRIPTION_TEXT,
+        candidate_resume_text=CANDIDATE_RESUME_TEXT,
+        _generate_structured=tracking_fake,
+    )
+
+    assert llm_call_count == 1
+    assert result is not None
+    assert result.overall_score > 0
 
 
 @pytest.mark.asyncio
