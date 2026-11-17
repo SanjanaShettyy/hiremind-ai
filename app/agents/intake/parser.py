@@ -92,6 +92,7 @@ async def parse_resume(
         system_prompt=RESUME_EXTRACTION_SYSTEM,
         user_prompt=f"RESUME TEXT:\n{resume_text}",
         response_model=ResumeProfile,
+        temperature=0.0,
     )
 
     profile = result if isinstance(result, ResumeProfile) else ResumeProfile.model_validate(result)

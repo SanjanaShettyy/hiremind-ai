@@ -12,7 +12,7 @@ app/core/schemas.py, never redefined here, per the single-source-of-truth rule.
 import logging
 from typing import Awaitable, Callable, Optional
 import uuid
-
+from app.agents.intake.parser import ResumeProfile, parse_resume as _parse_resume
 from app.core.schemas import SkillGapReport  # re-exported for router convenience
 
 from app.agents.intake import gap_analyzer, parser
@@ -163,6 +163,7 @@ async def analyze_skill_gap(
     generate_structured: Callable[..., Awaitable] | None = None,
     db_session=None,
     embed_fn: Callable[..., Awaitable] | None = None,
+    resume_profile: Optional[ResumeProfile] = None,
     candidate_name: Optional[str] = None,
     candidate_email: Optional[str] = None,
 ) -> SkillGapReport:
@@ -183,6 +184,7 @@ async def analyze_skill_gap(
         candidate_id=str(cand_uuid),
         job_id=str(job_uuid),
         resume_text=resume_text,
+        resume_profile=resume_profile,
         parsed_jd=parsed_jd,
         generate_structured=generate_structured,
     )
