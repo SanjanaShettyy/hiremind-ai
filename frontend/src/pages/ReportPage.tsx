@@ -7,11 +7,9 @@ import { Header } from "../components/Header";
 import {
   CheckCircle2,
   AlertTriangle,
+  ChevronDown,
   Lightbulb,
-  RotateCcw,
-  BookOpen,
-  TrendingUp,
-  Brain
+  Loader2,
 } from "lucide-react";
 
 export default function ReportPage() {
@@ -117,21 +115,17 @@ export default function ReportPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b0f17] text-slate-100 flex flex-col">
-        <Header subtitle="Synthesizing Final Benchmark..." />
-        <main className="flex-1 flex items-center justify-center p-6">
-          <div className="rounded-3xl border border-slate-800 bg-[#101726]/80 p-10 text-center shadow-2xl backdrop-blur-xl max-w-md w-full">
-            <div className="relative mx-auto h-16 w-16 mb-4">
-              <div className="absolute inset-0 rounded-full bg-indigo-500/20 animate-ping" />
-              <div className="relative flex h-full w-full items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-lg">
-                <Brain className="h-8 w-8 animate-pulse" />
-              </div>
-            </div>
-            <h2 className="text-xl font-bold text-white tracking-tight">
-              Synthesizing Performance Report...
+      <div className="flex min-h-screen flex-col bg-gray-50">
+        <Header subtitle="Generating report" />
+        <main className="flex flex-1 items-center justify-center p-6">
+          <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 text-center">
+            <Loader2 className="mx-auto h-8 w-8 animate-spin text-blue-600" />
+            <h2 className="mt-4 text-base font-semibold text-gray-900">
+              Generating your report
             </h2>
-            <p className="mt-2 text-xs text-slate-400 leading-relaxed">
-              Our evaluation agent is computing rubric-weighted dimension averages, skill delta progressions, and your personalized actionable study roadmap.
+            <p className="mt-1 text-sm text-gray-500">
+              This usually takes a few moments. We are scoring your answers and
+              putting together your study plan.
             </p>
           </div>
         </main>
@@ -141,35 +135,33 @@ export default function ReportPage() {
 
   if (error || !report) {
     return (
-      <div className="min-h-screen bg-[#0b0f17] text-slate-100 flex flex-col">
+      <div className="flex min-h-screen flex-col bg-gray-50">
         <Header />
-        <main className="mx-auto max-w-xl p-8 my-auto">
+        <main className="mx-auto flex w-full max-w-md flex-1 items-center px-6 py-10">
           <div
             role="alert"
-            className="rounded-2xl border border-rose-500/30 bg-rose-950/20 p-8 text-center backdrop-blur-md"
+            className="w-full rounded-lg border border-gray-200 bg-white p-8 text-center"
           >
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/20 text-rose-400 mb-3">
-              <AlertTriangle className="h-6 w-6" />
-            </div>
-            <h2 className="text-lg font-bold text-white">
-              Report Generation Error
+            <AlertTriangle className="mx-auto h-8 w-8 text-red-600" />
+            <h2 className="mt-3 text-base font-semibold text-gray-900">
+              Unable to generate report
             </h2>
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-1 text-sm text-gray-600">
               {error || "Could not retrieve the evaluation report for this interview session."}
             </p>
             <div className="mt-6 flex justify-center gap-3">
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition"
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
-                Try Again
+                Try again
               </button>
               <Link
                 to="/"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-5 py-2.5 text-xs font-semibold text-slate-300 hover:bg-slate-700 transition"
+                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
-                Back to Start
+                Back to start
               </Link>
             </div>
           </div>
@@ -180,79 +172,78 @@ export default function ReportPage() {
 
   const readinessColor =
     report.readiness_level === "ready"
-      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+      ? "border-green-200 bg-green-50 text-green-700"
       : report.readiness_level === "needs_work"
-      ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-      : "bg-rose-500/20 text-rose-300 border-rose-500/40";
+      ? "border-amber-200 bg-amber-50 text-amber-700"
+      : "border-red-200 bg-red-50 text-red-700";
 
   return (
-    <div className="min-h-screen bg-[#0b0f17] text-slate-100 pb-28">
-      <Header subtitle="Executive Diagnostic Report & Skill Benchmark" />
+    <div className="min-h-screen bg-gray-50 pb-16">
+      <Header subtitle="Interview report" />
 
-      <main className="mx-auto mt-8 max-w-5xl space-y-8 px-6">
-        {/* Top Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <main className="mx-auto mt-8 max-w-5xl space-y-6 px-6">
+        {/* Page title */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Diagnostic Performance Benchmark
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+              Interview report
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
-              Session <span className="font-mono text-indigo-300">{sessionId.slice(0, 8)}...</span> · Completed on{" "}
+            <p className="mt-1 text-sm text-gray-500">
+              Session {sessionId.slice(0, 8)}... · Completed on{" "}
               {new Date(report.generated_at).toLocaleDateString()}
             </p>
           </div>
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 self-start rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-purple-500 transition"
+            className="self-start rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
-            <RotateCcw className="h-4 w-4" /> Practice Another Role
+            Practice another role
           </button>
         </div>
 
-        {/* ---------------- 1. Executive Summary & Overall Score Card ---------------- */}
-        <section className="rounded-2xl border border-slate-800 bg-gradient-to-br from-[#101726] to-[#0d121f] p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-3 md:max-w-xl">
-              <div className="flex items-center gap-3">
+        {/* ---------------- 1. Summary & overall score ---------------- */}
+        <section className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+            <div className="md:max-w-xl">
+              <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`rounded-full border px-3 py-0.5 text-xs font-bold capitalize ${readinessColor}`}
+                  className={`rounded-md border px-2 py-0.5 text-xs font-medium capitalize ${readinessColor}`}
                 >
                   {report.readiness_level.replace(/_/g, " ")}
                 </span>
                 {report.percentile_estimate !== null && (
-                  <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-0.5 text-xs font-semibold text-indigo-300">
-                    Top {100 - report.percentile_estimate}% Percentile
+                  <span className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-700">
+                    Top {100 - report.percentile_estimate}%
                   </span>
                 )}
               </div>
-              <h2 className="text-xl font-bold text-white">Executive Synthesis</h2>
-              <p className="text-xs sm:text-sm leading-relaxed text-slate-300">
+              <h2 className="mt-3 text-base font-semibold text-gray-900">Summary</h2>
+              <p className="mt-1 text-sm leading-relaxed text-gray-600">
                 {report.executive_summary}
               </p>
             </div>
 
-            {/* Score Ring / Card */}
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-950/20 px-8 py-6 text-center shadow-inner">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
-                Overall Benchmark
-              </span>
-              <div className="mt-1 text-5xl font-black text-white tracking-tight">
+            <div className="w-full rounded-md border border-gray-200 bg-gray-50 p-4 text-center md:w-56">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Overall score
+              </p>
+              <p className="mt-1 text-4xl font-semibold text-gray-900">
                 {report.overall_score.toFixed(1)}
-                <span className="text-xl font-normal text-slate-500">/10</span>
-              </div>
-              <span className="mt-2 text-[11px] text-slate-400">
-                Evaluated across {report.total_turns} targeted turns
-              </span>
+                <span className="text-lg font-normal text-gray-400">/10</span>
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                Based on {report.total_turns} questions
+              </p>
             </div>
           </div>
 
-          {/* Dimension Averages Grid */}
-          <div className="mt-8 border-t border-slate-800/80 pt-6">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Evaluator Dimension Breakdown
+          {/* Dimension averages */}
+          <div className="mt-6 border-t border-gray-200 pt-5">
+            <h3 className="text-xs font-medium uppercase tracking-wide text-gray-500">
+              Score by dimension
             </h3>
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
               {(
                 Object.entries(report.dimension_averages) as [
                   ScoreDimension,
@@ -261,17 +252,15 @@ export default function ReportPage() {
               ).map(([dim, score]) => (
                 <div
                   key={dim}
-                  className="rounded-xl border border-slate-800/90 bg-[#0d121f]/90 p-3.5 text-center shadow-sm"
+                  className="rounded-md border border-gray-200 bg-white p-3"
                 >
-                  <p className="text-xs font-medium capitalize text-slate-400">
-                    {dim}
-                  </p>
-                  <p className="mt-1 text-xl font-bold text-white">
+                  <p className="text-xs capitalize text-gray-500">{dim}</p>
+                  <p className="mt-0.5 text-lg font-semibold text-gray-900">
                     {score.toFixed(1)}
                   </p>
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
                     <div
-                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                      className="h-full bg-blue-600"
                       style={{ width: `${(score / 10) * 100}%` }}
                     />
                   </div>
@@ -281,48 +270,38 @@ export default function ReportPage() {
           </div>
         </section>
 
-        {/* ---------------- 2. Strengths & Weak Areas ---------------- */}
+        {/* ---------------- 2. Strengths & areas to improve ---------------- */}
         <section className="grid gap-6 md:grid-cols-2">
-          {/* Top Strengths */}
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/10 p-6 backdrop-blur-md shadow-lg">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
-                <CheckCircle2 className="h-4 w-4" />
-              </div>
-              <h2 className="text-base font-bold text-emerald-300">
-                Validated Strengths
-              </h2>
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <h2 className="text-sm font-semibold text-gray-900">Strengths</h2>
             </div>
             <ul className="mt-4 space-y-2.5">
               {report.top_strengths.map((str, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed"
+                  className="flex items-start gap-2.5 text-sm leading-relaxed text-gray-600"
                 >
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" />
                   <span>{str}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Priority Gaps / Weak Areas */}
-          <div className="rounded-2xl border border-amber-500/30 bg-amber-950/10 p-6 backdrop-blur-md shadow-lg">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400">
-                <AlertTriangle className="h-4 w-4" />
-              </div>
-              <h2 className="text-base font-bold text-amber-300">
-                Priority Growth Opportunities
-              </h2>
+          <div className="rounded-lg border border-gray-200 bg-white p-6">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <h2 className="text-sm font-semibold text-gray-900">Areas to improve</h2>
             </div>
             <ul className="mt-4 space-y-2.5">
               {report.priority_gaps.map((gap, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed"
+                  className="flex items-start gap-2.5 text-sm leading-relaxed text-gray-600"
                 >
-                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
                   <span>{gap}</span>
                 </li>
               ))}
@@ -330,151 +309,147 @@ export default function ReportPage() {
           </div>
         </section>
 
-        {/* ---------------- 3. Skill Progression ---------------- */}
+        {/* ---------------- 3. Skill progression ---------------- */}
         {report.skill_progressions.length > 0 && (
-          <section className="rounded-2xl border border-slate-800 bg-[#101726]/70 p-6 backdrop-blur-xl shadow-xl">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-indigo-400" />
-              <h2 className="text-base font-bold text-white">
-                Skill Demonstration Trajectory
-              </h2>
+          <section className="rounded-lg border border-gray-200 bg-white">
+            <div className="border-b border-gray-200 px-6 py-4">
+              <h2 className="text-sm font-semibold text-gray-900">Skill progression</h2>
+              <p className="mt-0.5 text-sm text-gray-500">
+                Your resume claims compared with the level you demonstrated in the interview.
+              </p>
             </div>
-            <p className="mt-1 text-xs text-slate-400">
-              Direct comparison between resume claims and demonstrated live technical reasoning.
-            </p>
 
-            <div className="mt-6 space-y-3">
+            <ul className="divide-y divide-gray-100">
               {report.skill_progressions.map((prog) => {
                 const isImproved = prog.progression_delta > 0;
                 return (
-                  <div
+                  <li
                     key={prog.skill_name}
-                    className="flex flex-col gap-2 rounded-xl border border-slate-800/90 bg-[#0d121f]/90 p-4 sm:flex-row sm:items-center sm:justify-between shadow-sm"
+                    className="flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <span className="font-semibold text-white capitalize text-sm">
+                      <span className="text-sm font-medium capitalize text-gray-900">
                         {prog.skill_name.replace(/_/g, " ")}
                       </span>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="mt-0.5 text-xs text-gray-500">
                         Probed in questions: {prog.evidence_turns.join(", ")}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1 font-medium text-slate-300 capitalize">
+                    <div className="flex items-center gap-3 text-sm">
+                      <span className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 capitalize text-gray-700">
                         Initial: {prog.initial_gap}
                       </span>
-                      <span className="text-slate-500">→</span>
+                      <span className="text-gray-400">→</span>
                       <span
-                        className={`rounded-lg border px-2.5 py-1 font-semibold capitalize ${
+                        className={`rounded-md border px-2 py-0.5 font-medium capitalize ${
                           isImproved
-                            ? "border-emerald-500/40 bg-emerald-500/20 text-emerald-300"
-                            : "border-indigo-500/40 bg-indigo-500/20 text-indigo-300"
+                            ? "border-green-200 bg-green-50 text-green-700"
+                            : "border-blue-200 bg-blue-50 text-blue-700"
                         }`}
                       >
                         Inferred: {prog.final_inferred_level}
                       </span>
                       {prog.progression_delta !== 0 && (
                         <span
-                          className={`text-xs font-bold ${
-                            isImproved ? "text-emerald-400" : "text-amber-400"
+                          className={`text-sm font-semibold ${
+                            isImproved ? "text-green-600" : "text-amber-600"
                           }`}
                         >
-                          {prog.progression_delta > 0 ? `+${prog.progression_delta}` : prog.progression_delta}
+                          {prog.progression_delta > 0
+                            ? `+${prog.progression_delta}`
+                            : prog.progression_delta}
                         </span>
                       )}
                     </div>
-                  </div>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </section>
         )}
 
-        {/* ---------------- 4. Expandable Per-Question Breakdown ---------------- */}
-        <section className="rounded-2xl border border-slate-800 bg-[#101726]/70 p-6 backdrop-blur-xl shadow-xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-white">
-                Turn-by-Turn Diagnostic Analysis
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Detailed examiner scoring rubrics, qualitative feedback, and exemplar answer models for all 5 questions.
-              </p>
-            </div>
+        {/* ---------------- 4. Per-question breakdown ---------------- */}
+        <section className="rounded-lg border border-gray-200 bg-white">
+          <div className="border-b border-gray-200 px-6 py-4">
+            <h2 className="text-sm font-semibold text-gray-900">Question-by-question review</h2>
+            <p className="mt-0.5 text-sm text-gray-500">
+              Scoring, feedback and an example answer for each question.
+            </p>
           </div>
 
-          <div className="mt-6 space-y-3">
+          <div className="divide-y divide-gray-200">
             {report.per_turn_evaluations.map((evalItem: AnswerEvaluation) => {
               const isExpanded = expandedTurns.has(evalItem.turn_number);
 
               return (
-                <div
-                  key={evalItem.turn_number}
-                  className="rounded-xl border border-slate-800/90 bg-[#0d121f]/90 overflow-hidden shadow-sm"
-                >
+                <div key={evalItem.turn_number}>
                   <button
                     type="button"
                     onClick={() => toggleTurn(evalItem.turn_number)}
-                    className="flex w-full items-center justify-between bg-slate-900/40 px-5 py-4 text-left hover:bg-slate-900/70 transition"
+                    aria-expanded={isExpanded}
+                    className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-gray-50"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600/30 border border-indigo-500/40 text-xs font-bold text-indigo-300">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
                         {evalItem.turn_number}
                       </span>
-                      <span className="font-semibold text-white text-sm">
+                      <span className="text-sm font-medium text-gray-900">
                         Question {evalItem.turn_number}
                       </span>
-                      <span className="text-slate-600">·</span>
-                      <span className="text-xs text-slate-300">
-                        Score: <strong className="text-white font-bold">{evalItem.overall_score.toFixed(1)}/10</strong>
+                      <span className="text-sm text-gray-600">
+                        Score:{" "}
+                        <span className="font-semibold text-gray-900">
+                          {evalItem.overall_score.toFixed(1)}/10
+                        </span>
                       </span>
                       {evalItem.skill_level_inferred && (
-                        <span className="hidden rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-medium text-indigo-300 capitalize sm:inline-block">
+                        <span className="hidden rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs capitalize text-gray-600 sm:inline-block">
                           {evalItem.skill_level_inferred}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-indigo-400">
-                      {isExpanded ? "Collapse ▲" : "Inspect ▼"}
-                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${
+                        isExpanded ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
 
                   {isExpanded && (
-                    <div className="space-y-4 p-5 text-xs border-t border-slate-800/80">
-                      {/* Feedback */}
+                    <div className="space-y-4 border-t border-gray-100 bg-gray-50/50 px-6 py-5">
                       <div>
-                        <h4 className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">
-                          Examiner Qualitative Critique
+                        <h4 className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                          Feedback
                         </h4>
-                        <p className="mt-1 text-slate-300 leading-relaxed text-xs">
+                        <p className="mt-1 text-sm leading-relaxed text-gray-700">
                           {evalItem.summary_feedback}
                         </p>
                       </div>
 
-                      {/* Dimension Scores */}
-                      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5 pt-1">
+                      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5">
                         {evalItem.dimension_scores.map((ds) => (
                           <div
                             key={ds.dimension}
-                            className="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 text-center"
+                            className="rounded-md border border-gray-200 bg-white p-2.5 text-center"
                           >
-                            <span className="text-[10px] text-slate-400 capitalize block">
+                            <span className="block text-xs capitalize text-gray-500">
                               {ds.dimension}
                             </span>
-                            <span className="text-sm font-bold text-white">
+                            <span className="text-sm font-semibold text-gray-900">
                               {ds.score.toFixed(1)}
                             </span>
                           </div>
                         ))}
                       </div>
 
-                      {/* Strengths & Improvements */}
-                      <div className="grid gap-3 sm:grid-cols-2 pt-1">
+                      <div className="grid gap-3 sm:grid-cols-2">
                         {evalItem.strengths.length > 0 && (
-                          <div className="rounded-lg border border-emerald-500/20 bg-emerald-950/20 p-3 text-emerald-300">
-                            <span className="font-bold block mb-1">What went well:</span>
-                            <ul className="list-disc pl-4 space-y-1 text-slate-300">
+                          <div className="rounded-md border border-green-200 bg-green-50 p-3">
+                            <span className="mb-1 block text-sm font-medium text-green-800">
+                              What went well
+                            </span>
+                            <ul className="list-disc space-y-1 pl-4 text-sm text-gray-700">
                               {evalItem.strengths.map((s, i) => (
                                 <li key={i}>{s}</li>
                               ))}
@@ -482,9 +457,11 @@ export default function ReportPage() {
                           </div>
                         )}
                         {evalItem.improvements.length > 0 && (
-                          <div className="rounded-lg border border-amber-500/20 bg-amber-950/20 p-3 text-amber-300">
-                            <span className="font-bold block mb-1">Target suggestions:</span>
-                            <ul className="list-disc pl-4 space-y-1 text-slate-300">
+                          <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
+                            <span className="mb-1 block text-sm font-medium text-amber-800">
+                              Suggestions
+                            </span>
+                            <ul className="list-disc space-y-1 pl-4 text-sm text-gray-700">
                               {evalItem.improvements.map((imp, i) => (
                                 <li key={i}>{imp}</li>
                               ))}
@@ -493,15 +470,14 @@ export default function ReportPage() {
                         )}
                       </div>
 
-                      {/* Exemplar Model Answer */}
                       {evalItem.model_answer_snippet && (
-                        <div className="rounded-xl border border-indigo-500/30 bg-indigo-950/20 p-4">
-                          <div className="flex items-center gap-1.5 text-indigo-300 font-bold text-[11px] mb-1">
-                            <Lightbulb className="h-3.5 w-3.5" />
-                            <span>Gold-Standard Exemplar Response:</span>
+                        <div className="rounded-md border border-blue-200 bg-blue-50 p-4">
+                          <div className="mb-1 flex items-center gap-1.5 text-sm font-medium text-blue-800">
+                            <Lightbulb className="h-4 w-4" />
+                            <span>Example answer</span>
                           </div>
-                          <p className="text-xs text-indigo-200/90 leading-relaxed italic">
-                            "{evalItem.model_answer_snippet}"
+                          <p className="text-sm leading-relaxed text-gray-700">
+                            {evalItem.model_answer_snippet}
                           </p>
                         </div>
                       )}
@@ -513,26 +489,21 @@ export default function ReportPage() {
           </div>
         </section>
 
-        {/* ---------------- 5. Study Plan Checklist ---------------- */}
-        <section className="rounded-2xl border border-slate-800 bg-[#101726]/70 p-6 backdrop-blur-xl shadow-xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-indigo-400" />
-              <div>
-                <h2 className="text-base font-bold text-white">
-                  Actionable Preparation Roadmap
-                </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Follow this checklist to fill identified gaps before live company interviews.
-                </p>
-              </div>
+        {/* ---------------- 5. Study plan ---------------- */}
+        <section className="rounded-lg border border-gray-200 bg-white">
+          <div className="flex items-start justify-between gap-4 border-b border-gray-200 px-6 py-4">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900">Preparation checklist</h2>
+              <p className="mt-0.5 text-sm text-gray-500">
+                Work through these items to close the gaps before your live interviews.
+              </p>
             </div>
-            <span className="text-xs font-semibold text-indigo-300 font-mono">
+            <span className="shrink-0 text-sm text-gray-500">
               {completedStudyItems.size} of {report.study_plan.length} completed
             </span>
           </div>
 
-          <ul className="mt-6 space-y-2.5">
+          <ul className="divide-y divide-gray-100">
             {report.study_plan.map((item, idx) => {
               const isChecked = completedStudyItems.has(idx);
 
@@ -540,21 +511,17 @@ export default function ReportPage() {
                 <li
                   key={idx}
                   onClick={() => toggleStudyItem(idx)}
-                  className={`flex cursor-pointer select-none items-start gap-3 rounded-xl border p-3.5 transition-all ${
-                    isChecked
-                      ? "border-emerald-500/30 bg-emerald-950/20 text-slate-400"
-                      : "border-slate-800 bg-[#0d121f]/90 hover:border-slate-700 text-slate-200"
-                  }`}
+                  className="flex cursor-pointer select-none items-start gap-3 px-6 py-3.5 hover:bg-gray-50"
                 >
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => {}}
-                    className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-800 text-indigo-600 focus:ring-0 cursor-pointer"
+                    className="mt-0.5 h-4 w-4 cursor-pointer rounded border-gray-300 accent-blue-600"
                   />
                   <span
-                    className={`text-xs leading-relaxed ${
-                      isChecked ? "line-through text-slate-500" : ""
+                    className={`text-sm leading-relaxed ${
+                      isChecked ? "text-gray-400 line-through" : "text-gray-700"
                     }`}
                   >
                     {item}
@@ -565,18 +532,16 @@ export default function ReportPage() {
           </ul>
         </section>
 
-        {/* Bottom Practice Again Action */}
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-2">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-purple-500 transition"
+            className="rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
           >
-            Practice Another Interview →
+            Practice another interview
           </button>
         </div>
       </main>
     </div>
   );
 }
-

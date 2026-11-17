@@ -198,17 +198,17 @@ export function MicButton({
     <div className={`relative inline-flex items-center gap-2 ${className}`}>
       {/* Live recording indicator and elapsed time */}
       {isRecording && (
-        <div className="flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700 animate-pulse">
-          <span className="h-2 w-2 rounded-full bg-red-600" />
-          <span>REC {formatTime(elapsedSeconds)}</span>
+        <div className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-red-600" />
+          <span>Recording {formatTime(elapsedSeconds)}</span>
         </div>
       )}
 
       {/* Processing indicator */}
       {isProcessing && (
-        <div className="flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-          <span className="h-2 w-2 animate-ping rounded-full bg-blue-600" />
-          <span>Transcribing...</span>
+        <div className="flex items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-blue-600" />
+          <span>Transcribing…</span>
         </div>
       )}
 
@@ -229,14 +229,14 @@ export function MicButton({
             ? "Stop recording answer"
             : "Start recording voice answer"
         }
-        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all shadow-sm ${
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border transition-colors ${
           isRecording
-            ? "border-red-500 bg-red-600 text-white hover:bg-red-700 ring-2 ring-red-300"
+            ? "border-red-600 bg-red-600 text-white hover:bg-red-700"
             : isProcessing
             ? "border-blue-300 bg-blue-50 text-blue-600 cursor-wait"
             : disabled
             ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-            : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+            : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900"
         }`}
       >
         {isRecording ? (
