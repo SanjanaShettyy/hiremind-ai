@@ -198,16 +198,16 @@ export function MicButton({
     <div className={`relative inline-flex items-center gap-2 ${className}`}>
       {/* Live recording indicator and elapsed time */}
       {isRecording && (
-        <div className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-red-600" />
+        <div className="flex items-center gap-1.5 rounded-full border border-rose-400/25 bg-rose-400/10 px-2.5 py-1 text-xs font-medium text-rose-300">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-rose-400" />
           <span>Recording {formatTime(elapsedSeconds)}</span>
         </div>
       )}
 
       {/* Processing indicator */}
       {isProcessing && (
-        <div className="flex items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-blue-600" />
+        <div className="flex items-center gap-1.5 rounded-full border border-violet-400/25 bg-violet-400/10 px-2.5 py-1 text-xs font-medium text-violet-200">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-violet-300" />
           <span>Transcribing…</span>
         </div>
       )}
@@ -229,14 +229,14 @@ export function MicButton({
             ? "Stop recording answer"
             : "Start recording voice answer"
         }
-        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border transition-colors ${
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors ${
           isRecording
-            ? "border-red-600 bg-red-600 text-white hover:bg-red-700"
+            ? "border-rose-400 bg-rose-500 text-white shadow-[0_0_20px_rgba(244,63,94,0.5)] hover:bg-rose-600"
             : isProcessing
-            ? "border-blue-300 bg-blue-50 text-blue-600 cursor-wait"
+            ? "border-violet-400/40 bg-violet-400/10 text-violet-300 cursor-wait"
             : disabled
-            ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-            : "border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            ? "border-white/10 bg-white/[0.02] text-zinc-600 cursor-not-allowed"
+            : "border-white/15 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white"
         }`}
       >
         {isRecording ? (
@@ -251,7 +251,7 @@ export function MicButton({
         ) : isProcessing ? (
           // Processing spinner icon
           <svg
-            className="h-5 w-5 animate-spin text-blue-600"
+            className="h-5 w-5 animate-spin text-violet-300"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"

@@ -90,22 +90,24 @@ export default function InterviewPage() {
   );
 
   const controlButton =
-    "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50 text-gray-900">
+    <div className="flex h-screen flex-col text-zinc-100">
       {/* ---------------- Header: navigation, voice controls, status ---------------- */}
-      <header className="z-10 border-b border-gray-200 bg-white px-6 py-3">
+      <header className="z-10 border-b border-white/10 bg-[#05060b]/60 px-6 py-3 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link
               to={`/session/${sessionId}/skill-gap`}
-              className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
+              className="inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-white"
             >
               <ArrowLeft className="h-4 w-4" /> Skill gap
             </Link>
-            <span className="h-5 w-px bg-gray-200" />
-            <h1 className="text-sm font-semibold text-gray-900">Technical interview</h1>
+            <span className="h-5 w-px bg-white/10" />
+            <h1 className="font-display text-sm font-semibold text-white">
+              Technical interview
+            </h1>
           </div>
 
           <div className="flex items-center gap-2">
@@ -114,7 +116,7 @@ export default function InterviewPage() {
               onClick={replayQuestion}
               disabled={turnNumber === 0}
               title="Replay audio"
-              className={`${controlButton} border-gray-300 bg-white text-gray-700 hover:bg-gray-50`}
+              className={`${controlButton} border-white/15 bg-white/5 text-zinc-300 hover:bg-white/10`}
             >
               <RotateCcw className="h-4 w-4" />
               <span className="hidden sm:inline">Replay</span>
@@ -125,10 +127,10 @@ export default function InterviewPage() {
               onClick={toggleMute}
               className={`${controlButton} ${
                 isMuted
-                  ? "border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100"
+                  ? "border-white/10 bg-transparent text-zinc-500 hover:bg-white/5"
                   : isSpeaking
-                  ? "border-blue-300 bg-blue-50 text-blue-700"
-                  : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                  ? "border-violet-400/40 bg-violet-400/10 text-violet-200"
+                  : "border-white/15 bg-white/5 text-zinc-300 hover:bg-white/10"
               }`}
             >
               {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -137,24 +139,24 @@ export default function InterviewPage() {
               </span>
             </button>
 
-            <span className="mx-1 h-5 w-px bg-gray-200" />
+            <span className="mx-1 h-5 w-px bg-white/10" />
 
             <div className="flex items-center gap-1.5">
               <span
                 className={`h-2 w-2 rounded-full ${
                   connectionStatus === "connected"
-                    ? "bg-green-500"
+                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
                     : connectionStatus === "reconnecting" || connectionStatus === "connecting"
-                    ? "animate-pulse bg-amber-500"
-                    : "bg-red-500"
+                    ? "animate-pulse bg-amber-400"
+                    : "bg-rose-500"
                 }`}
               />
-              <span className="text-sm capitalize text-gray-600">{connectionStatus}</span>
+              <span className="text-sm capitalize text-zinc-400">{connectionStatus}</span>
               {connectionStatus === "disconnected" && !isEvaluationFailed && (
                 <button
                   type="button"
                   onClick={reconnect}
-                  className="ml-1 rounded-md border border-blue-600 px-2 py-0.5 text-xs font-medium text-blue-600 hover:bg-blue-50"
+                  className="ml-1 rounded-full border border-violet-400/50 px-2.5 py-0.5 text-xs font-medium text-violet-200 hover:bg-violet-400/10"
                 >
                   Reconnect
                 </button>
@@ -165,7 +167,7 @@ export default function InterviewPage() {
 
         {/* Progress */}
         <div className="mx-auto mt-3 max-w-5xl">
-          <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center justify-between text-xs text-zinc-500">
             <span>
               {turnNumber > 0
                 ? `Question ${turnNumber} of ${totalQuestions || 5}`
@@ -173,9 +175,9 @@ export default function InterviewPage() {
             </span>
             <span>{progressPercent}% complete</span>
           </div>
-          <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-gray-200">
+          <div className="bar-track mt-1.5 h-1 w-full">
             <div
-              className="h-full bg-blue-600 transition-all duration-500"
+              className="bar-fill transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -185,10 +187,10 @@ export default function InterviewPage() {
       {error && (
         <div
           role="alert"
-          className={`border-b px-6 py-3 text-center text-sm ${
+          className={`border-b px-6 py-3 text-center text-sm backdrop-blur-md ${
             isEvaluationFailed
-              ? "border-amber-200 bg-amber-50 text-amber-800"
-              : "border-red-200 bg-red-50 text-red-700"
+              ? "border-amber-400/25 bg-amber-400/10 text-amber-200"
+              : "border-rose-400/25 bg-rose-400/10 text-rose-200"
           }`}
         >
           {isEvaluationFailed && (
@@ -205,9 +207,7 @@ export default function InterviewPage() {
             if (msg.sender === "system") {
               return (
                 <div key={msg.id} className="text-center">
-                  <span className="inline-block rounded-md bg-gray-200/70 px-3 py-1 text-xs text-gray-600">
-                    {msg.text}
-                  </span>
+                  <span className="chip text-zinc-400">{msg.text}</span>
                 </div>
               );
             }
@@ -220,22 +220,22 @@ export default function InterviewPage() {
                 className={`flex gap-3 ${isInterviewer ? "justify-start" : "justify-end"}`}
               >
                 {isInterviewer && (
-                  <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-blue-600 text-white">
+                  <div className="orb flex h-8 w-8 shrink-0 select-none items-center justify-center text-white">
                     <Bot className="h-4 w-4" />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[85%] rounded-lg px-4 py-3 sm:max-w-[75%] ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 sm:max-w-[75%] ${
                     isInterviewer
-                      ? "border border-gray-200 bg-white text-gray-900"
-                      : "bg-blue-600 text-white"
+                      ? "glass rounded-tl-md text-zinc-100"
+                      : "bubble-user rounded-tr-md"
                   }`}
                 >
                   <div className="mb-1.5 flex items-center justify-between gap-3">
                     <span
                       className={`text-xs font-semibold ${
-                        isInterviewer ? "text-gray-500" : "text-blue-100"
+                        isInterviewer ? "text-zinc-400" : "text-white/80"
                       }`}
                     >
                       {isInterviewer ? "Interviewer" : "You"}
@@ -243,7 +243,7 @@ export default function InterviewPage() {
                     {msg.turnNumber && (
                       <span
                         className={`text-xs ${
-                          isInterviewer ? "text-gray-400" : "text-blue-200"
+                          isInterviewer ? "text-zinc-500" : "text-white/60"
                         }`}
                       >
                         Turn {msg.turnNumber} of 5
@@ -253,7 +253,7 @@ export default function InterviewPage() {
 
                   {isInterviewer && msg.question?.target_skill && (
                     <div className="mb-2">
-                      <span className="inline-block rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                      <span className="inline-block rounded-full border border-violet-400/25 bg-violet-400/10 px-2.5 py-0.5 text-xs font-medium text-violet-200">
                         Skill: {msg.question.target_skill}
                       </span>
                     </div>
@@ -264,12 +264,12 @@ export default function InterviewPage() {
                   </div>
 
                   {isInterviewer && msg.question && (
-                    <div className="mt-3 flex items-center justify-end border-t border-gray-100 pt-2">
+                    <div className="mt-3 flex items-center justify-end border-t border-white/10 pt-2">
                       <button
                         type="button"
                         onClick={() => speak(msg.question!.question_text)}
                         title="Replay this question"
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-violet-300 hover:text-violet-200"
                       >
                         <Volume2 className="h-3.5 w-3.5" />
                         <span>Replay audio</span>
@@ -278,17 +278,17 @@ export default function InterviewPage() {
                   )}
 
                   {!isInterviewer && msg.evaluation && (
-                    <div className="mt-3 space-y-1.5 rounded-md border border-white/20 bg-white/10 p-3">
+                    <div className="mt-3 space-y-1.5 rounded-xl border border-white/20 bg-black/20 p-3">
                       <div className="flex items-center justify-between text-xs font-semibold text-white">
                         <span>Score: {msg.evaluation.overall_score}/10</span>
                         {msg.routingHint && (
-                          <span className="font-normal capitalize text-blue-100">
+                          <span className="font-normal capitalize text-white/70">
                             Next: {msg.routingHint.replace(/_/g, " ")}
                           </span>
                         )}
                       </div>
                       {msg.evaluation.summary_feedback && (
-                        <p className="text-xs leading-relaxed text-blue-50">
+                        <p className="text-xs leading-relaxed text-white/85">
                           {msg.evaluation.summary_feedback}
                         </p>
                       )}
@@ -297,7 +297,7 @@ export default function InterviewPage() {
                 </div>
 
                 {!isInterviewer && (
-                  <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-gray-200 text-gray-600">
+                  <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full border border-white/15 bg-white/10 text-zinc-300">
                     <User className="h-4 w-4" />
                   </div>
                 )}
@@ -308,15 +308,15 @@ export default function InterviewPage() {
           {/* Waiting indicator */}
           {isWaitingForQuestion && connectionStatus === "connected" && (
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full bg-blue-600 text-white">
+              <div className="orb flex h-8 w-8 shrink-0 select-none items-center justify-center text-white">
                 <Bot className="h-4 w-4" />
               </div>
-              <div className="rounded-lg border border-gray-200 bg-white px-4 py-3">
+              <div className="glass rounded-tl-md px-4 py-3">
                 <div className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" />
-                  <span className="ml-2 text-sm text-gray-500">
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-300 [animation-delay:-0.3s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-300 [animation-delay:-0.15s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-300" />
+                  <span className="ml-2 text-sm text-zinc-400">
                     {turnNumber === 0
                       ? "Generating interview questions…"
                       : "Evaluating your answer…"}
@@ -332,15 +332,17 @@ export default function InterviewPage() {
 
       {/* ---------------- Completion banner ---------------- */}
       {isInterviewComplete && (
-        <div className="border-t border-green-200 bg-green-50 px-6 py-4 text-center">
-          <p className="text-sm font-semibold text-green-800">Interview complete</p>
-          <p className="mt-0.5 text-sm text-gray-600">
+        <div className="border-t border-emerald-400/25 bg-emerald-400/10 px-6 py-4 text-center backdrop-blur-xl">
+          <p className="font-display text-sm font-semibold text-emerald-300">
+            Interview complete
+          </p>
+          <p className="mt-0.5 text-sm text-zinc-300">
             All five answers have been evaluated. Review your evaluations before generating your report.
           </p>
           <button
             type="button"
             onClick={() => navigate(`/session/${sessionId}/report`)}
-            className="mt-3 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+            className="btn btn-primary mt-3"
           >
             Generate report
           </button>
@@ -349,12 +351,12 @@ export default function InterviewPage() {
 
       {/* ---------------- Answer input ---------------- */}
       {!isInterviewComplete && (
-        <footer className="border-t border-gray-200 bg-white p-4">
+        <footer className="border-t border-white/10 bg-[#05060b]/70 p-4 backdrop-blur-xl">
           <div className="mx-auto max-w-3xl">
             {voiceError && (
               <div
                 role="alert"
-                className="mb-3 flex items-center justify-between gap-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800"
+                className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-sm text-amber-200"
               >
                 <span className="flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 shrink-0" />
@@ -363,7 +365,7 @@ export default function InterviewPage() {
                 <button
                   type="button"
                   onClick={() => setVoiceError(null)}
-                  className="shrink-0 text-xs font-medium text-amber-700 hover:text-amber-900"
+                  className="shrink-0 text-xs font-medium text-amber-300 hover:text-amber-100"
                 >
                   Dismiss
                 </button>
@@ -404,7 +406,7 @@ export default function InterviewPage() {
                       ? "Please wait…"
                       : "Type your answer here"
                   }
-                  className="block w-full resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 disabled:bg-gray-50 disabled:text-gray-400"
+                  className="field block resize-none"
                 />
               </div>
 
@@ -416,14 +418,14 @@ export default function InterviewPage() {
                   connectionStatus !== "connected" ||
                   isEvaluationFailed
                 }
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="btn btn-primary h-11"
               >
                 <span>Send</span>
                 <Send className="h-4 w-4" />
               </button>
             </form>
 
-            <p className="mt-2 text-center text-xs text-gray-500">
+            <p className="mt-2 text-center text-xs text-zinc-500">
               Use the microphone or type your answer. Press Enter to send, Shift+Enter for a new line.
             </p>
           </div>

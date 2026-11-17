@@ -46,15 +46,15 @@ const STEP_LABELS: Record<LoadingStep, { title: string; desc: string; stepNum: n
 const OVERVIEW = [
   {
     title: "Skill gap analysis",
-    desc: "Compares your resume against the job requirements.",
+    desc: "Your resume is compared against the job requirements to show exactly where you fall short.",
   },
   {
     title: "Tailored interview",
-    desc: "Five technical questions based on your gaps.",
+    desc: "Five technical questions are generated around your gaps. Answer by voice or text.",
   },
   {
     title: "Detailed report",
-    desc: "Scores, feedback and a personalized study plan.",
+    desc: "Get scores, feedback on every answer and a personalized study plan.",
   },
 ];
 
@@ -134,55 +134,44 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-10">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
-            Skill gap analysis
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 pb-20 pt-14 sm:pt-20">
+        {/* Hero */}
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="chip gap-2 text-zinc-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />
+            AI interview preparation
+          </span>
+          <h1 className="font-display text-gradient mt-6 text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">
+            Close your skill gaps before the interview
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
-            Upload your resume and paste the job description you are targeting.
-            We will compare the two, highlight where you fall short, and prepare
-            a mock technical interview based on those gaps.
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-zinc-400">
+            Upload your resume, paste the job description, and practice a mock
+            technical interview built around the skills you are missing.
           </p>
         </div>
 
-        <ol className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {OVERVIEW.map((item, index) => (
-            <li
-              key={item.title}
-              className="rounded-lg border border-gray-200 bg-white p-4"
-            >
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700">
-                {index + 1}
-              </span>
-              <p className="mt-3 text-sm font-medium text-gray-900">{item.title}</p>
-              <p className="mt-1 text-sm text-gray-500">{item.desc}</p>
-            </li>
-          ))}
-        </ol>
-
+        {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className="rounded-lg border border-gray-200 bg-white"
+          className="glass mx-auto mt-12 max-w-4xl overflow-hidden"
         >
-          <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
-            {/* Resume upload */}
+          <div className="grid grid-cols-1 gap-6 p-6 sm:p-8 md:grid-cols-2">
             <div>
               <label
                 htmlFor="resume"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-zinc-200"
               >
-                Resume <span className="font-normal text-gray-500">(PDF or DOCX)</span>
+                Resume <span className="font-normal text-zinc-500">(PDF or DOCX)</span>
               </label>
 
               <div
-                className={`relative flex h-48 flex-col items-center justify-center rounded-md border border-dashed px-4 text-center transition-colors ${
+                className={`relative flex h-48 flex-col items-center justify-center rounded-xl border border-dashed px-4 text-center transition-colors ${
                   resume
-                    ? "border-green-500 bg-green-50/50"
-                    : "border-gray-300 bg-gray-50 hover:border-blue-500 hover:bg-blue-50/40"
+                    ? "border-emerald-400/50 bg-emerald-400/5"
+                    : "border-white/15 bg-white/[0.02] hover:border-violet-400/60 hover:bg-violet-400/5"
                 }`}
               >
                 <input
@@ -196,31 +185,30 @@ export default function UploadPage() {
 
                 {resume ? (
                   <div className="flex flex-col items-center">
-                    <CheckCircle2 className="h-8 w-8 text-green-600" />
-                    <p className="mt-2 max-w-[220px] truncate text-sm font-medium text-gray-900">
+                    <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+                    <p className="mt-2 max-w-[220px] truncate text-sm font-medium text-white">
                       {resume.name}
                     </p>
-                    <p className="mt-0.5 text-xs text-gray-500">
+                    <p className="mt-0.5 text-xs text-zinc-400">
                       {(resume.size / 1024).toFixed(1)} KB · Click to replace
                     </p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center">
-                    <FileText className="h-8 w-8 text-gray-400" />
-                    <p className="mt-2 text-sm font-medium text-gray-700">
+                    <FileText className="h-8 w-8 text-zinc-500" />
+                    <p className="mt-2 text-sm font-medium text-zinc-200">
                       Choose a file or drag and drop
                     </p>
-                    <p className="mt-0.5 text-xs text-gray-500">PDF or DOCX up to 10MB</p>
+                    <p className="mt-0.5 text-xs text-zinc-500">PDF or DOCX up to 10MB</p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Job description */}
             <div>
               <label
                 htmlFor="jd"
-                className="mb-1.5 block text-sm font-medium text-gray-700"
+                className="mb-2 block text-sm font-medium text-zinc-200"
               >
                 Job description
               </label>
@@ -231,16 +219,16 @@ export default function UploadPage() {
                 disabled={loading}
                 onChange={(e) => setJobDescription(e.target.value)}
                 placeholder="Paste the role title, responsibilities, tech stack and qualifications here"
-                className="h-48 w-full resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 disabled:bg-gray-50 disabled:text-gray-500"
+                className="field h-48 resize-none"
               />
             </div>
           </div>
 
           {error && (
-            <div className="px-6 pb-6">
+            <div className="px-6 pb-6 sm:px-8">
               <div
                 role="alert"
-                className="flex items-start gap-2.5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                className="flex items-start gap-2.5 rounded-xl border border-rose-400/25 bg-rose-400/10 px-4 py-3 text-sm text-rose-200"
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <span>{error}</span>
@@ -249,30 +237,28 @@ export default function UploadPage() {
           )}
 
           {loading && (
-            <div className="border-t border-gray-200 px-6 py-4">
+            <div className="border-t border-white/10 px-6 py-4 sm:px-8">
               <div className="mb-2 flex items-center justify-between text-sm">
-                <span className="font-medium text-gray-900">
-                  {STEP_LABELS[step].title}
-                </span>
-                <span className="text-gray-500">
+                <span className="font-medium text-white">{STEP_LABELS[step].title}</span>
+                <span className="text-zinc-400">
                   Step {STEP_LABELS[step].stepNum} of 3
                 </span>
               </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+              <div className="bar-track h-1.5 w-full">
                 <div
-                  className="h-full bg-blue-600 transition-all duration-500"
+                  className="bar-fill transition-all duration-500"
                   style={{ width: `${(STEP_LABELS[step].stepNum / 3) * 100}%` }}
                 />
               </div>
-              <p className="mt-2 text-sm text-gray-500">{STEP_LABELS[step].desc}</p>
+              <p className="mt-2 text-sm text-zinc-400">{STEP_LABELS[step].desc}</p>
             </div>
           )}
 
-          <div className="flex items-center justify-end rounded-b-lg border-t border-gray-200 bg-gray-50 px-6 py-4">
+          <div className="flex items-center justify-end border-t border-white/10 bg-white/[0.02] px-6 py-4 sm:px-8">
             <button
               type="submit"
               disabled={!canSubmit}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className="btn btn-primary w-full sm:w-auto"
             >
               {loading ? (
                 <>
@@ -288,9 +274,29 @@ export default function UploadPage() {
             </button>
           </div>
         </form>
+
+        {/* How it works */}
+        <section className="mx-auto mt-20 max-w-4xl">
+          <h2 className="font-display text-center text-2xl font-semibold tracking-tight text-white">
+            How it works
+          </h2>
+          <ol className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {OVERVIEW.map((item, index) => (
+              <li key={item.title} className="glass p-5">
+                <span className="font-display text-sm font-semibold text-violet-300">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <p className="font-display mt-3 text-base font-semibold text-white">
+                  {item.title}
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-zinc-400">{item.desc}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
       </main>
 
-      <footer className="border-t border-gray-200 bg-white py-5 text-center text-sm text-gray-500">
+      <footer className="border-t border-white/10 py-6 text-center text-sm text-zinc-500">
         © {new Date().getFullYear()} HireMind AI
       </footer>
     </div>

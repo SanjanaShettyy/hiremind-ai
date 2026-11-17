@@ -16,18 +16,17 @@ export default function SkillGapPage() {
 
   if (!data) {
     return (
-      <div className="flex min-h-screen flex-col bg-gray-50">
+      <div className="flex min-h-screen flex-col">
         <Header />
         <main className="mx-auto w-full max-w-md flex-1 px-6 py-20">
-          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-            <h1 className="text-lg font-semibold text-gray-900">Session not found</h1>
-            <p className="mt-2 text-sm text-gray-600">
+          <div className="glass p-8 text-center">
+            <h1 className="font-display text-lg font-semibold text-white">
+              Session not found
+            </h1>
+            <p className="mt-2 text-sm text-zinc-400">
               We couldn't find the skill-gap report for this session in this browser tab.
             </p>
-            <Link
-              className="mt-6 inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-              to="/"
-            >
+            <Link className="btn btn-primary mt-6" to="/">
               <ArrowLeft className="h-4 w-4" /> Back to upload
             </Link>
           </div>
@@ -68,46 +67,50 @@ export default function SkillGapPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50 pb-24">
+    <div className="flex min-h-screen flex-col pb-24">
       <Header subtitle="Skill gap analysis" />
 
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-6 px-6 py-8">
         <div className="flex items-center justify-between gap-4">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900"
+            className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" /> Change resume / job description
           </Link>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-zinc-500">
             Report ID: {report.report_id.slice(0, 8)}...
           </span>
         </div>
 
         {/* Summary */}
-        <section className="rounded-lg border border-gray-200 bg-white p-6">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <section className="glass p-6 sm:p-8">
+          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl">
-              <h1 className="text-xl font-semibold text-gray-900">Skill match analysis</h1>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              <h1 className="font-display text-gradient text-3xl font-semibold tracking-tight">
+                Skill match analysis
+              </h1>
+              <p className="mt-3 text-sm leading-relaxed text-zinc-400">
                 We compared your resume against the requirements of the target
                 position. Gaps are prioritized to shape your personalized
                 5-question technical interview.
               </p>
             </div>
 
-            <div className="w-full rounded-md border border-gray-200 bg-gray-50 p-4 md:w-64">
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            <div className="w-full rounded-xl border border-white/10 bg-black/20 p-5 md:w-64">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
                 Overall role match
               </p>
-              <p className="mt-1 text-3xl font-semibold text-gray-900">{matchPct}%</p>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-200">
+              <p className="font-display text-gradient-accent mt-1 text-5xl font-semibold">
+                {matchPct}%
+              </p>
+              <div className="bar-track mt-4 h-1.5">
                 <div
-                  className="h-full bg-blue-600 transition-all duration-700"
+                  className="bar-fill transition-all duration-700"
                   style={{ width: `${matchPct}%` }}
                 />
               </div>
-              <p className="mt-3 text-xs text-gray-500">
+              <p className="mt-3 text-xs text-zinc-400">
                 {groups.matched.length} matched · {groups.partial.length} partial · {groups.missing.length} gaps
               </p>
             </div>
@@ -138,22 +141,22 @@ export default function SkillGapPage() {
       </main>
 
       {/* Bottom action bar */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white px-6 py-3">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-[#05060b]/80 px-6 py-3 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-gray-900">Ready to begin?</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm font-medium text-white">Ready to begin?</p>
+            <p className="text-sm text-zinc-400">
               The interview has 5 questions, targeting your {groups.partial.length + groups.missing.length} skill gaps.
             </p>
             {startError && (
-              <p className="mt-1 text-sm font-medium text-red-600">{startError}</p>
+              <p className="mt-1 text-sm font-medium text-rose-300">{startError}</p>
             )}
           </div>
           <button
             type="button"
             onClick={handleStartInterview}
             disabled={isStarting}
-            className="inline-flex shrink-0 items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn btn-primary shrink-0"
           >
             {isStarting ? (
               <>
