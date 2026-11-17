@@ -9,10 +9,10 @@ import {
   VolumeX,
   RotateCcw,
   Send,
-  Sparkles,
   Bot,
   User,
-  ArrowLeft
+  ArrowLeft,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function InterviewPage() {
@@ -55,8 +55,8 @@ export default function InterviewPage() {
       speak(question.question_text);
     },
     onComplete: () => {
-    stopSpeech();
-  },
+      stopSpeech();
+    },
   });
 
   useEffect(() => {
@@ -89,80 +89,74 @@ export default function InterviewPage() {
     Math.round(((turnNumber > 0 ? turnNumber : 1) / (totalQuestions || 5)) * 100),
   );
 
+  const controlButton =
+    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+
   return (
-    <div className="flex h-screen flex-col bg-[#0b0f17] text-slate-100">
-      {/* ---------------- Header with Status & Voice Controls ---------------- */}
-      <header className="border-b border-slate-800 bg-[#0d121f]/90 px-6 py-3.5 backdrop-blur-xl shadow-lg shadow-black/20 z-10">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-3">
+    <div className="flex h-screen flex-col text-zinc-100">
+      {/* ---------------- Header: navigation, voice controls, status ---------------- */}
+      <header className="z-10 border-b border-white/10 bg-[#05060b]/60 px-6 py-3 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <Link
               to={`/session/${sessionId}/skill-gap`}
-              className="flex items-center gap-1 text-xs font-semibold text-slate-400 hover:text-white transition"
+              className="inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-white"
             >
-              <ArrowLeft className="h-3.5 w-3.5" /> Skill Gap
+              <ArrowLeft className="h-4 w-4" /> Skill gap
             </Link>
-            <span className="text-slate-700">|</span>
-            <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400">
-                <Bot className="h-4 w-4" />
-              </div>
-              <h1 className="text-sm font-bold text-white tracking-tight">
-                AI Technical Interview Session
-              </h1>
-            </div>
+            <span className="h-5 w-px bg-white/10" />
+            <h1 className="font-display text-sm font-semibold text-white">
+              Technical interview
+            </h1>
           </div>
 
-          {/* Voice Controls & Connection Status */}
-          <div className="flex items-center gap-2.5">
-            {/* Replay Question Button */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={replayQuestion}
               disabled={turnNumber === 0}
               title="Replay audio"
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-200 hover:border-indigo-400 hover:bg-slate-800 hover:text-indigo-300 disabled:opacity-40 transition"
+              className={`${controlButton} border-white/15 bg-white/5 text-zinc-300 hover:bg-white/10`}
             >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span>Replay</span>
+              <RotateCcw className="h-4 w-4" />
+              <span className="hidden sm:inline">Replay</span>
             </button>
 
-            {/* Mute Toggle */}
             <button
               type="button"
               onClick={toggleMute}
-              className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
+              className={`${controlButton} ${
                 isMuted
-                  ? "border-slate-700 bg-slate-800/50 text-slate-400 hover:bg-slate-800"
+                  ? "border-white/10 bg-transparent text-zinc-500 hover:bg-white/5"
                   : isSpeaking
-                  ? "border-indigo-500/50 bg-indigo-950/60 text-indigo-300 ring-1 ring-indigo-500/30 animate-pulse"
-                  : "border-slate-700 bg-slate-800/80 text-slate-200 hover:text-indigo-300"
+                  ? "border-violet-400/40 bg-violet-400/10 text-violet-200"
+                  : "border-white/15 bg-white/5 text-zinc-300 hover:bg-white/10"
               }`}
             >
-              {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
-              <span>{isMuted ? "Muted" : isSpeaking ? "Speaking..." : "Voice On"}</span>
+              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              <span className="hidden sm:inline">
+                {isMuted ? "Muted" : isSpeaking ? "Speaking…" : "Voice on"}
+              </span>
             </button>
 
-            <span className="text-slate-700">|</span>
+            <span className="mx-1 h-5 w-px bg-white/10" />
 
-            {/* Status indicator */}
             <div className="flex items-center gap-1.5">
               <span
                 className={`h-2 w-2 rounded-full ${
                   connectionStatus === "connected"
-                    ? "bg-emerald-400 shadow-sm shadow-emerald-400/50"
+                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
                     : connectionStatus === "reconnecting" || connectionStatus === "connecting"
                     ? "animate-pulse bg-amber-400"
                     : "bg-rose-500"
                 }`}
               />
-              <span className="text-[11px] font-medium capitalize text-slate-400">
-                {connectionStatus}
-              </span>
-              {connectionStatus === "disconnected" && !isEvaluationFailed &&(
+              <span className="text-sm capitalize text-zinc-400">{connectionStatus}</span>
+              {connectionStatus === "disconnected" && !isEvaluationFailed && (
                 <button
                   type="button"
                   onClick={reconnect}
-                  className="ml-1 rounded bg-indigo-600/30 border border-indigo-500/40 px-2 py-0.5 text-[11px] font-medium text-indigo-300 hover:bg-indigo-600/50"
+                  className="ml-1 rounded-full border border-violet-400/50 px-2.5 py-0.5 text-xs font-medium text-violet-200 hover:bg-violet-400/10"
                 >
                   Reconnect
                 </button>
@@ -171,19 +165,19 @@ export default function InterviewPage() {
           </div>
         </div>
 
-        {/* Top Progress bar */}
-        <div className="mx-auto mt-2.5 max-w-5xl">
-          <div className="flex items-center justify-between text-[11px] text-slate-400">
+        {/* Progress */}
+        <div className="mx-auto mt-3 max-w-5xl">
+          <div className="flex items-center justify-between text-xs text-zinc-500">
             <span>
               {turnNumber > 0
                 ? `Question ${turnNumber} of ${totalQuestions || 5}`
-                : "Initializing Question Set..."}
+                : "Preparing questions…"}
             </span>
-            <span>{progressPercent}% Complete</span>
+            <span>{progressPercent}% complete</span>
           </div>
-          <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-slate-800">
+          <div className="bar-track mt-1.5 h-1 w-full">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-500"
+              className="bar-fill transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -195,27 +189,25 @@ export default function InterviewPage() {
           role="alert"
           className={`border-b px-6 py-3 text-center text-sm backdrop-blur-md ${
             isEvaluationFailed
-              ? "border-amber-500/40 bg-amber-950/40 text-amber-200"
-              : "border-rose-500/30 bg-rose-950/40 text-rose-300"
+              ? "border-amber-400/25 bg-amber-400/10 text-amber-200"
+              : "border-rose-400/25 bg-rose-400/10 text-rose-200"
           }`}
         >
           {isEvaluationFailed && (
-            <p className="mb-1 font-bold">Interview Paused — Technical Issue</p>
+            <p className="mb-0.5 font-semibold">Interview paused — technical issue</p>
           )}
           <p>{error}</p>
         </div>
       )}
 
-      {/* ---------------- Chat Stream Viewport ---------------- */}
+      {/* ---------------- Conversation ---------------- */}
       <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
-        <div className="mx-auto max-w-3xl space-y-6">
+        <div className="mx-auto max-w-3xl space-y-5">
           {messages.map((msg) => {
             if (msg.sender === "system") {
               return (
-                <div key={msg.id} className="text-center my-3">
-                  <span className="inline-block rounded-full border border-slate-800 bg-slate-900/60 px-3.5 py-1 text-[11px] text-slate-400">
-                    {msg.text}
-                  </span>
+                <div key={msg.id} className="text-center">
+                  <span className="chip text-zinc-400">{msg.text}</span>
                 </div>
               );
             }
@@ -225,38 +217,33 @@ export default function InterviewPage() {
             return (
               <div
                 key={msg.id}
-                className={`flex gap-3.5 ${
-                  isInterviewer ? "justify-start" : "justify-end"
-                }`}
+                className={`flex gap-3 ${isInterviewer ? "justify-start" : "justify-end"}`}
               >
-                {/* Interviewer Avatar */}
                 {isInterviewer && (
-                  <div className="flex h-9 w-9 shrink-0 select-none items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-xs font-bold text-white shadow-lg shadow-indigo-600/30">
-                    <Bot className="h-5 w-5" />
+                  <div className="orb flex h-8 w-8 shrink-0 select-none items-center justify-center text-white">
+                    <Bot className="h-4 w-4" />
                   </div>
                 )}
 
-                {/* Message Bubble */}
                 <div
-                  className={`max-w-[85%] rounded-2xl p-5 shadow-xl sm:max-w-[80%] ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 sm:max-w-[75%] ${
                     isInterviewer
-                      ? "rounded-tl-xs border border-slate-800 bg-[#101726]/90 text-slate-100 backdrop-blur-md"
-                      : "rounded-tr-xs border border-indigo-500/30 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-indigo-500/10"
+                      ? "glass rounded-tl-md text-zinc-100"
+                      : "bubble-user rounded-tr-md"
                   }`}
                 >
-                  {/* Header Row */}
-                  <div className="mb-2 flex items-center justify-between gap-3 border-b border-white/5 pb-1.5">
+                  <div className="mb-1.5 flex items-center justify-between gap-3">
                     <span
-                      className={`text-xs font-bold ${
-                        isInterviewer ? "text-indigo-400" : "text-indigo-200"
+                      className={`text-xs font-semibold ${
+                        isInterviewer ? "text-zinc-400" : "text-white/80"
                       }`}
                     >
-                      {isInterviewer ? "AI Technical Interviewer" : "Candidate Response"}
+                      {isInterviewer ? "Interviewer" : "You"}
                     </span>
                     {msg.turnNumber && (
                       <span
-                        className={`text-[10px] font-mono px-2 py-0.5 rounded ${
-                          isInterviewer ? "bg-slate-800 text-slate-400" : "bg-indigo-800/60 text-indigo-200"
+                        className={`text-xs ${
+                          isInterviewer ? "text-zinc-500" : "text-white/60"
                         }`}
                       >
                         Turn {msg.turnNumber} of 5
@@ -264,80 +251,75 @@ export default function InterviewPage() {
                     )}
                   </div>
 
-                  {/* Question Target Skill Tag */}
                   {isInterviewer && msg.question?.target_skill && (
-                    <div className="mb-3">
-                      <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-xs font-medium text-indigo-300">
-                        <Sparkles className="h-3 w-3" /> Probing Skill: {msg.question.target_skill}
+                    <div className="mb-2">
+                      <span className="inline-block rounded-full border border-violet-400/25 bg-violet-400/10 px-2.5 py-0.5 text-xs font-medium text-violet-200">
+                        Skill: {msg.question.target_skill}
                       </span>
                     </div>
                   )}
 
-                  {/* Message Content */}
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200 font-normal">
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed">
                     {msg.text}
                   </div>
 
-                  {/* Audio Replay for Interviewer */}
                   {isInterviewer && msg.question && (
-                    <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-end">
+                    <div className="mt-3 flex items-center justify-end border-t border-white/10 pt-2">
                       <button
                         type="button"
                         onClick={() => speak(msg.question!.question_text)}
                         title="Replay this question"
-                        className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 transition"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-violet-300 hover:text-violet-200"
                       >
                         <Volume2 className="h-3.5 w-3.5" />
-                        <span>Replay Audio</span>
+                        <span>Replay audio</span>
                       </button>
                     </div>
                   )}
 
-                  {/* Candidate Evaluation Summary Card */}
                   {!isInterviewer && msg.evaluation && (
-                    <div className="mt-3.5 rounded-xl border border-white/10 bg-black/20 p-3.5 space-y-2">
-                      <div className="flex items-center justify-between text-xs font-semibold text-indigo-200">
-                        <span>Turn Score: {msg.evaluation.overall_score}/10</span>
+                    <div className="mt-3 space-y-1.5 rounded-xl border border-white/20 bg-black/20 p-3">
+                      <div className="flex items-center justify-between text-xs font-semibold text-white">
+                        <span>Score: {msg.evaluation.overall_score}/10</span>
                         {msg.routingHint && (
-                          <span className="capitalize text-indigo-300 text-[11px] font-normal">
+                          <span className="font-normal capitalize text-white/70">
                             Next: {msg.routingHint.replace(/_/g, " ")}
                           </span>
                         )}
                       </div>
                       {msg.evaluation.summary_feedback && (
-                        <p className="text-xs text-indigo-100/90 italic leading-relaxed">
-                          "{msg.evaluation.summary_feedback}"
+                        <p className="text-xs leading-relaxed text-white/85">
+                          {msg.evaluation.summary_feedback}
                         </p>
                       )}
                     </div>
                   )}
                 </div>
 
-                {/* Candidate Avatar */}
                 {!isInterviewer && (
-                  <div className="flex h-9 w-9 shrink-0 select-none items-center justify-center rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 shadow-md">
-                    <User className="h-5 w-5" />
+                  <div className="flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full border border-white/15 bg-white/10 text-zinc-300">
+                    <User className="h-4 w-4" />
                   </div>
                 )}
               </div>
             );
           })}
 
-          {/* Evaluating State Indicator */}
+          {/* Waiting indicator */}
           {isWaitingForQuestion && connectionStatus === "connected" && (
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 select-none items-center justify-center rounded-xl bg-indigo-600 text-xs font-bold text-white shadow-lg shadow-indigo-600/30">
-                <Bot className="h-5 w-5" />
+              <div className="orb flex h-8 w-8 shrink-0 select-none items-center justify-center text-white">
+                <Bot className="h-4 w-4" />
               </div>
-              <div className="rounded-2xl rounded-tl-xs border border-slate-800 bg-[#101726]/90 px-5 py-3.5 shadow-xl">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-indigo-500 [animation-delay:-0.3s]" />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-indigo-500 [animation-delay:-0.15s]" />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-indigo-500" />
-                  <span className="ml-2 text-xs font-medium text-slate-400">
+              <div className="glass rounded-tl-md px-4 py-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-300 [animation-delay:-0.3s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-300 [animation-delay:-0.15s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-violet-300" />
+                  <span className="ml-2 text-sm text-zinc-400">
                     {turnNumber === 0
-                      ? "Generating targeted question bank..."
-                      : "Evaluator Agent scoring response and analyzing competencies..."}
+                      ? "Generating interview questions…"
+                      : "Evaluating your answer…"}
                   </span>
                 </div>
               </div>
@@ -348,52 +330,54 @@ export default function InterviewPage() {
         </div>
       </main>
 
-      {/* ---------------- Completion Banner ---------------- */}
+      {/* ---------------- Completion banner ---------------- */}
       {isInterviewComplete && (
-        <div className="border-t border-emerald-500/30 bg-emerald-950/40 p-4 text-center backdrop-blur-xl">
-          <p className="font-bold text-emerald-300">
-            Interview Complete!
+        <div className="border-t border-emerald-400/25 bg-emerald-400/10 px-6 py-4 text-center backdrop-blur-xl">
+          <p className="font-display text-sm font-semibold text-emerald-300">
+            Interview complete
           </p>
-          <p className="text-xs text-slate-300 mt-0.5">
+          <p className="mt-0.5 text-sm text-zinc-300">
             All five answers have been evaluated. Review your evaluations before generating your report.
           </p>
           <button
             type="button"
             onClick={() => navigate(`/session/${sessionId}/report`)}
-            className="mt-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-emerald-600/30 hover:from-emerald-500 hover:to-teal-500 transition"
+            className="btn btn-primary mt-3"
           >
-            Generate Report → →
+            Generate report
           </button>
         </div>
       )}
 
-      {/* ---------------- Bottom Input Control Bar ---------------- */}
+      {/* ---------------- Answer input ---------------- */}
       {!isInterviewComplete && (
-        <footer className="border-t border-slate-800 bg-[#0d121f]/90 p-4 backdrop-blur-xl shadow-2xl">
+        <footer className="border-t border-white/10 bg-[#05060b]/70 p-4 backdrop-blur-xl">
           <div className="mx-auto max-w-3xl">
             {voiceError && (
               <div
                 role="alert"
-                className="mb-3 flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-950/40 px-4 py-2 text-xs font-medium text-amber-300"
+                className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-sm text-amber-200"
               >
-                <span>⚠️ {voiceError}</span>
+                <span className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                  {voiceError}
+                </span>
                 <button
                   type="button"
                   onClick={() => setVoiceError(null)}
-                  className="rounded px-1.5 py-0.5 text-amber-400 hover:bg-amber-900/40"
+                  className="shrink-0 text-xs font-medium text-amber-300 hover:text-amber-100"
                 >
-                  ✕
+                  Dismiss
                 </button>
               </div>
             )}
 
             <form onSubmit={handleSend} className="flex items-end gap-2.5">
-              {/* Mic Button */}
               <MicButton
                 disabled={
-                isWaitingForQuestion ||
-                connectionStatus !== "connected" ||
-                isEvaluationFailed
+                  isWaitingForQuestion ||
+                  connectionStatus !== "connected" ||
+                  isEvaluationFailed
                 }
                 onRecordingStart={stopSpeech}
                 onRecordingComplete={async (audioBlob) => {
@@ -403,7 +387,6 @@ export default function InterviewPage() {
                 onError={(msg) => setVoiceError(msg)}
               />
 
-              {/* Text Input area */}
               <div className="relative flex-1">
                 <textarea
                   ref={textareaRef}
@@ -412,39 +395,38 @@ export default function InterviewPage() {
                   onChange={(e) => setInputAnswer(e.target.value)}
                   onKeyDown={handleKeyDown}
                   disabled={
-                  isWaitingForQuestion ||
-                  connectionStatus !== "connected" ||
-                  isEvaluationFailed
+                    isWaitingForQuestion ||
+                    connectionStatus !== "connected" ||
+                    isEvaluationFailed
                   }
                   placeholder={
                     connectionStatus !== "connected"
-                      ? "Connecting to interview session..."
+                      ? "Connecting to interview session…"
                       : isWaitingForQuestion
-                      ? "Interviewer is speaking or evaluating your answer..."
-                      : "Speak via mic or type your technical answer here... (Enter to send, Shift+Enter for newline)"
+                      ? "Please wait…"
+                      : "Type your answer here"
                   }
-                  className="block w-full resize-none rounded-xl border border-slate-700/80 bg-slate-900/60 p-3.5 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:bg-slate-900/30 disabled:text-slate-600 transition"
+                  className="field block resize-none"
                 />
               </div>
 
-              {/* Send Button */}
               <button
                 type="submit"
                 disabled={
                   !inputAnswer.trim() ||
                   isWaitingForQuestion ||
-                  connectionStatus !== "connected"||
+                  connectionStatus !== "connected" ||
                   isEvaluationFailed
                 }
-                className="flex h-11 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 font-semibold text-white shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:opacity-40 transition"
+                className="btn btn-primary h-11"
               >
                 <span>Send</span>
                 <Send className="h-4 w-4" />
               </button>
             </form>
 
-            <p className="mt-2 text-center text-[11px] text-slate-400">
-              Speak naturally using the microphone or type. Real-time Groq Whisper transcription & adaptive evaluation enabled.
+            <p className="mt-2 text-center text-xs text-zinc-500">
+              Use the microphone or type your answer. Press Enter to send, Shift+Enter for a new line.
             </p>
           </div>
         </footer>
@@ -452,4 +434,3 @@ export default function InterviewPage() {
     </div>
   );
 }
-

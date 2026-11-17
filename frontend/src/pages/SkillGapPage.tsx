@@ -5,7 +5,7 @@ import { loadSessionData, saveSessionData, type SessionData } from "../api/sessi
 import SkillGroup from "../components/SkillGroup";
 import { groupSkills } from "../utils/skillGroups";
 import { Header } from "../components/Header";
-import { ArrowRight, ArrowLeft, Target, Loader2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 
 export default function SkillGapPage() {
   const { sessionId = "" } = useParams<{ sessionId: string }>();
@@ -16,19 +16,18 @@ export default function SkillGapPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#0b0f17] text-slate-100 flex flex-col">
+      <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex-1 mx-auto max-w-xl px-6 py-20 text-center">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8">
-            <h1 className="text-xl font-bold text-white">Session Not Found</h1>
-            <p className="mt-2 text-sm text-slate-400">
+        <main className="mx-auto w-full max-w-md flex-1 px-6 py-20">
+          <div className="glass p-8 text-center">
+            <h1 className="font-display text-lg font-semibold text-white">
+              Session not found
+            </h1>
+            <p className="mt-2 text-sm text-zinc-400">
               We couldn't find the skill-gap report for this session in this browser tab.
             </p>
-            <Link
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition"
-              to="/"
-            >
-              <ArrowLeft className="h-4 w-4" /> Back to Upload
+            <Link className="btn btn-primary mt-6" to="/">
+              <ArrowLeft className="h-4 w-4" /> Back to upload
             </Link>
           </div>
         </main>
@@ -68,111 +67,105 @@ export default function SkillGapPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0f17] text-slate-100 flex flex-col pb-28">
-      <Header subtitle="Stage 2: Skill Match & Gap Analysis" />
+    <div className="flex min-h-screen flex-col pb-24">
+      <Header subtitle="Skill gap analysis" />
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-6 py-10 space-y-8">
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between">
+      <main className="mx-auto w-full max-w-5xl flex-1 space-y-6 px-6 py-8">
+        <div className="flex items-center justify-between gap-4">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition"
+            className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white"
           >
-            <ArrowLeft className="h-4 w-4" /> Change Resume / Job Description
+            <ArrowLeft className="h-4 w-4" /> Change resume / job description
           </Link>
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-sm text-zinc-500">
             Report ID: {report.report_id.slice(0, 8)}...
           </span>
         </div>
 
-        {/* Top Alignment Hero Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-[#101726] to-[#0c101c] p-6 sm:p-8 backdrop-blur-xl shadow-2xl shadow-black/50">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="space-y-2 max-w-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-0.5 text-xs font-semibold text-indigo-300">
-                <Target className="h-3.5 w-3.5 text-indigo-400" />
-                Cognitive Role-Fit Alignment
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                Skill Match Analysis
+        {/* Summary */}
+        <section className="glass p-6 sm:p-8">
+          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl">
+              <h1 className="font-display text-gradient text-3xl font-semibold tracking-tight">
+                Skill match analysis
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Our agent has cross-referenced your background with the target position requirements. Gaps are automatically prioritized to shape your personalized 5-question technical interview.
+              <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+                We compared your resume against the requirements of the target
+                position. Gaps are prioritized to shape your personalized
+                5-question technical interview.
               </p>
             </div>
 
-            {/* Score Ring Card */}
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-950/20 px-8 py-6 text-center shadow-inner">
-              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
-                Overall Role Match
-              </span>
-              <div className="mt-2 text-4xl sm:text-5xl font-black tracking-tight text-white">
+            <div className="w-full rounded-xl border border-white/10 bg-black/20 p-5 md:w-64">
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+                Overall role match
+              </p>
+              <p className="font-display text-gradient-accent mt-1 text-5xl font-semibold">
                 {matchPct}%
-              </div>
-              <div className="mt-3 h-2 w-32 overflow-hidden rounded-full bg-slate-800">
+              </p>
+              <div className="bar-track mt-4 h-1.5">
                 <div
-                  className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-700"
+                  className="bar-fill transition-all duration-700"
                   style={{ width: `${matchPct}%` }}
                 />
               </div>
-              <span className="mt-2 text-[11px] text-slate-400">
-                {groups.matched.length} Matched · {groups.partial.length} Partial · {groups.missing.length} Gaps
-              </span>
+              <p className="mt-3 text-xs text-zinc-400">
+                {groups.matched.length} matched · {groups.partial.length} partial · {groups.missing.length} gaps
+              </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Skill Category Groups */}
+        {/* Skill groups */}
         <div className="space-y-6">
           <SkillGroup
-            title="Matched Strengths"
-            description="Verified skills where your claimed proficiency meets or exceeds role specifications."
+            title="Matched strengths"
+            description="Skills where your resume meets or exceeds the role requirements."
             tone="matched"
             skills={groups.matched}
           />
           <SkillGroup
-            title="Partial Proficiencies"
-            description="Skills found on your profile that appear at a lower tier than requested. Interview will probe depth."
+            title="Partial proficiencies"
+            description="Skills on your resume at a lower level than requested. The interview will probe depth."
             tone="partial"
             skills={groups.partial}
           />
           <SkillGroup
-            title="Identified Skill Gaps"
-            description="Target requirements with no direct evidence on your resume. Priority interview questions target these."
+            title="Skill gaps"
+            description="Requirements with no direct evidence on your resume. Interview questions will focus on these."
             tone="missing"
             skills={groups.missing}
           />
         </div>
       </main>
 
-      {/* Floating Bottom Launch Bar */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-800/80 bg-[#0b0f17]/90 p-4 backdrop-blur-xl">
+      {/* Bottom action bar */}
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-[#05060b]/80 px-6 py-3 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-medium text-slate-300">
-              Ready to begin?
-            </p>
-            <p className="text-[11px] text-slate-400">
-              The AI interviewer will ask 5 targeted questions probing your {groups.partial.length + groups.missing.length} skill gaps.
+            <p className="text-sm font-medium text-white">Ready to begin?</p>
+            <p className="text-sm text-zinc-400">
+              The interview has 5 questions, targeting your {groups.partial.length + groups.missing.length} skill gaps.
             </p>
             {startError && (
-              <p className="mt-1 text-xs text-red-400 font-semibold">{startError}</p>
+              <p className="mt-1 text-sm font-medium text-rose-300">{startError}</p>
             )}
           </div>
           <button
             type="button"
             onClick={handleStartInterview}
             disabled={isStarting}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:from-indigo-500 hover:to-purple-500 disabled:opacity-50 transition"
+            className="btn btn-primary shrink-0"
           >
             {isStarting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Preparing Interview Agent…</span>
+                <span>Preparing interview…</span>
               </>
             ) : (
               <>
-                <span>Start AI Interview</span>
+                <span>Start interview</span>
                 <ArrowRight className="h-4 w-4" />
               </>
             )}
@@ -182,4 +175,3 @@ export default function SkillGapPage() {
     </div>
   );
 }
-
