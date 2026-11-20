@@ -146,7 +146,7 @@ class ParsedJobDescription(BaseModel):
     company: str | None = None
     requirements: list[JDRequirement] = Field(default_factory=list)
     responsibilities: list[str] = Field(default_factory=list)
-    raw_text: str
+    raw_text: str = ""
 
 
 async def parse_job_description(

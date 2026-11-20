@@ -1,31 +1,28 @@
-# --- Core Web Framework ---
-fastapi
-uvicorn[standard]
-pydantic
-pydantic-settings
-python-dotenv
-python-multipart
+# Core API
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic==2.13.5
+pydantic-settings==2.15.0
+python-dotenv==1.2.3
+python-multipart==0.0.32
 
-# --- Database & Vector Store ---
-sqlalchemy[asyncio]
-asyncpg
-psycopg2-binary
-pgvector
-alembic
+# Database and migrations
+SQLAlchemy[asyncio]==2.0.52
+asyncpg==0.31.0
+pgvector==0.5.0
+alembic==1.20.0
 
-# --- LLM Clients & Agent Frameworks ---
-openai
-groq
-mistralai
-anthropic
-langchain
-langgraph
+# LLM providers
+openai==3.8.0
+groq==1.7.0
+mistralai==2.10.0
+anthropic==2.6.0
+google-genai==2.34.0
 
-# --- Document Parsers ---
-pymupdf
-python-docx
+# Agent framework
+langchain==1.4.9
+langgraph==1.2.12
 
-# --- Testing & HTTP Tools ---
-pytest
-pytest-asyncio
-httpx
+# Document processing
+PyMuPDF==1.28.2
+python-docx==1.2.0
