@@ -180,7 +180,7 @@ export default function ReportPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="font-display text-gradient text-3xl font-semibold tracking-tight">
-              Interview report
+              INTERVIEW REPORT
             </h1>
             <p className="mt-1 text-sm text-zinc-500">
               Session {sessionId.slice(0, 8)}... · Completed on{" "}
