@@ -2,7 +2,7 @@
 
 An AI interview-prep platform. Upload your resume, paste a job description, and HireMind finds your skill gaps, runs a mock technical interview built around them (voice or text), and gives you a scored report with a study plan.
 
-> **Live Demo:** `PASTE_DEPLOYMENT_LINK_HERE`
+> **Live Demo:** `https://hiremind-ai-weld.vercel.app`
 
 ## Features
 
@@ -17,50 +17,24 @@ An AI interview-prep platform. Upload your resume, paste a job description, and 
 
 ```mermaid
 flowchart TD
-    A([User]) --> B[Upload resume<br/>PDF / DOCX]
-    A --> C[Paste job description]
-
-    subgraph S1["1 · Intake and Analysis"]
-        B --> D["POST /parse/resume<br/>extract text and profile"]
-        C --> E["POST /parse/jd<br/>extract role and requirements"]
-        D --> F["POST /analyze/skill-gap<br/>compare resume vs JD"]
-        E --> F
-        F --> G[/"Skill-gap report<br/>match score, gaps, strengths"/]
-    end
-
-    G --> H["POST /session/bootstrap<br/>generate 5 targeted questions"]
-
-    subgraph S2["2 · Interview Agent (WebSocket)"]
-        H --> I["Ask question<br/>text + browser text-to-speech"]
-        I --> J{"Answer type"}
-        J -->|Text| L["Candidate answer"]
-        J -->|Voice| K["Whisper<br/>speech-to-text"]
-        K --> L
-        L --> M["Evaluate answer<br/>5 dimension scores + feedback"]
-        M --> N{"More questions?"}
-        N -->|Yes| I
-    end
-
-    N -->|No| O["POST /session/id/finalize"]
-
-    subgraph S3["3 · Evaluation and Reporting"]
-        O --> P["Aggregate scores,<br/>skill progression, readiness"]
-        P --> Q["Final report<br/>summary, strengths, gaps, study plan"]
-    end
-
-    Q --> R([User reviews report])
-
-    classDef io fill:#eef2ff,stroke:#6366f1,color:#1e1b4b
-    classDef step fill:#ffffff,stroke:#94a3b8,color:#0f172a
-    classDef choice fill:#fffbeb,stroke:#d97706,color:#451a03
-    classDef out fill:#ecfdf5,stroke:#059669,color:#022c22
-    class A,R io
-    class B,C,D,E,F,H,I,K,L,M,O,P step
-    class J,N choice
-    class G,Q out
-    style S1 fill:#f8fafc,stroke:#cbd5e1,color:#334155
-    style S2 fill:#f8fafc,stroke:#cbd5e1,color:#334155
-    style S3 fill:#f8fafc,stroke:#cbd5e1,color:#334155
+    A["User"] --> B["Upload Resume<br/>PDF / DOCX"]
+    A --> C["Paste Job Description"]
+    B --> D["Resume Parser<br/>/parse/resume"]
+    C --> E["JD Parser<br/>/parse/jd"]
+    D --> F["Skill-Gap Analyzer<br/>/analyze/skill-gap"]
+    E --> F
+    F --> G["Skill-Gap Report<br/>score, strengths, gaps"]
+    G --> H["Question Generator<br/>/session/bootstrap"]
+    H --> I["Interview Agent<br/>WebSocket"]
+    I --> J{"Answer Type"}
+    J -->|Voice| K["Whisper<br/>Speech-to-Text"]
+    J -->|Text| L["Candidate Answer"]
+    K --> L
+    L --> M["Answer Evaluator<br/>5 dimensions + feedback"]
+    M --> N{"More Questions?"}
+    N -->|Yes| I
+    N -->|No| O["Final Report<br/>/session/id/finalize"]
+    O --> P["Readiness Level<br/>+ Study Plan"]
 ```
 
 ### System Architecture
