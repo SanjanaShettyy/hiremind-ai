@@ -167,5 +167,5 @@ pytest
 ## Deployment Notes
 
 - With Docker Compose, Nginx serves the frontend and proxies REST and WebSocket traffic to the backend, so everything runs on one origin.
-- If you host the frontend and backend separately, add the frontend's URL to `allow_origins` in `app/main.py` (it currently allows `http://localhost:5173` only) and set `VITE_API_URL` / `VITE_WS_URL` at build time.
+- The frontend is deployed on Vercel and the backend on Render. CORS allows `localhost:5173` and any `*.vercel.app` origin (see `app/main.py`); set `VITE_API_URL` / `VITE_WS_URL` at build time.
 - Interview sessions in the default flow are held in memory, so they are lost when the backend restarts.
