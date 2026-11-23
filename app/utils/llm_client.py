@@ -1,7 +1,7 @@
 """
 Unified LLM client (app.utils.llm_client), per ARCHITECTURE.md §7.
 
-Default provider: Groq, model "llama-3.3-70b-versatile" — good free-tier
+Default provider: Groq, model "openai/gpt-oss-120b" — good free-tier
 rate limits for dev/testing, fast inference. Check https://console.groq.com
 for current available models if this one gets deprecated/renamed later.
 """
@@ -190,7 +190,7 @@ async def generate_structured(
     resolved_model = model or settings.default_llm_model
 
     if settings.llm_provider == "groq" and ("gpt" in resolved_model.lower() or resolved_model == "gpt-4o"):
-        resolved_model = settings.default_llm_model or "llama-3.3-70b-versatile"
+        resolved_model = settings.default_llm_model or "openai/gpt-oss-120b"
 
     raw = await _raw_completion(
         system_prompt=system_prompt,

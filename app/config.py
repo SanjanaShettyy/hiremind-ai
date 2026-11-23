@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/hiremind"
 
-    default_llm_model: str = "llama-3.3-70b-versatile"
+    default_llm_model: str = "openai/gpt-oss-120b"
 
 
 @lru_cache
